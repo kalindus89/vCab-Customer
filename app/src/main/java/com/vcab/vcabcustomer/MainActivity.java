@@ -132,8 +132,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             return;
                         }
 
-
-
                         String refreshToken = task.getResult();
 
                         if (!refreshToken.equals(new SessionManagement().getFBToken(getApplicationContext()))) {
