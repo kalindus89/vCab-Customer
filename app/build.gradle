@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -35,4 +36,24 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0' //for threads or any given Looper
+    implementation 'io.reactivex.rxjava3:rxjava:3.1.2'//for threads or any given Looper
+
+    implementation 'com.karumi:dexter:6.2.3'
+
+    implementation platform('com.google.firebase:firebase-bom:29.0.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-messaging'
+
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+    implementation 'com.airbnb.android:lottie:4.2.1'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }
