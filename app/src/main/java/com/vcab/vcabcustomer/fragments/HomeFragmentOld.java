@@ -2,6 +2,7 @@ package com.vcab.vcabcustomer.fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,6 +37,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.vcab.vcabcustomer.MessagesClass;
 import com.vcab.vcabcustomer.R;
+import com.vcab.vcabcustomer.call_back_interfaces.IFirebaseDriverInfoListener;
+import com.vcab.vcabcustomer.call_back_interfaces.IFirebaseFailedListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +53,16 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback {
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
     LocationCallback locationCallBack;
+
+    //load driver
+    private double instance=1.0; // default in Km
+    private static final double LIMIT_RANGE=10.0; //  Km
+    private Location previousLocation,currentLocation; // use to calculate distance
+
+    IFirebaseDriverInfoListener iFirebaseDriverInfoListener;
+    IFirebaseFailedListener iFirebaseFailedListener;
+
+
 
     public void stopLocationUpdates() {
         if (fusedLocationProviderClient != null) {
