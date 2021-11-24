@@ -59,7 +59,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                    openActivity();
 
                 } else {
-                    MessagesClass.showToastMsg("Google play services NOT  Available",SplashScreenActivity.this);
+                    Messages_Common_Class.showToastMsg("Google play services NOT  Available",SplashScreenActivity.this);
                 }
             }
 
@@ -92,7 +92,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             Dialog dialog = googleApiAvailability.getErrorDialog(this, result, 201, new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialogInterface) {
-                    MessagesClass.showToastMsg("User Cancelled Dialog",SplashScreenActivity.this);
+                    Messages_Common_Class.showToastMsg("User Cancelled Dialog",SplashScreenActivity.this);
                 }
             });
             dialog.show();

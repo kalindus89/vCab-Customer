@@ -23,7 +23,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.vcab.vcabcustomer.MainActivity;
-import com.vcab.vcabcustomer.MessagesClass;
+import com.vcab.vcabcustomer.Messages_Common_Class;
 import com.vcab.vcabcustomer.R;
 
 import java.util.Arrays;
@@ -90,7 +90,7 @@ public class UserAuthenticationActivity extends AppCompatActivity {
                             finish();
                         } else {
                             progress_bar.setVisibility(View.GONE);
-                            MessagesClass.showToastMsg("Not ok big", UserAuthenticationActivity.this);
+                            Messages_Common_Class.showToastMsg("Not ok big", UserAuthenticationActivity.this);
                         }
                     }
                 });
@@ -132,7 +132,7 @@ public class UserAuthenticationActivity extends AppCompatActivity {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                     } else {
-                        MessagesClass.showToastMsg("Failed to sign in: " + response.getError().getMessage(), UserAuthenticationActivity.this);
+                        Messages_Common_Class.showToastMsg("Failed to sign in: " + response.getError().getMessage(), UserAuthenticationActivity.this);
                     }
 
 
