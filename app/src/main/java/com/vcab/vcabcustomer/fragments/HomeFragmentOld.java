@@ -4,6 +4,8 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -540,13 +542,21 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         //We already have marker with this key, doesn't set again
 
         if(!Messages_Common_Class.markerList.containsKey(driverGeoModel.getKey())){
+
+
+            int height = 160;
+            int width = 75;
+            BitmapDrawable bitmapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.car);
+            Bitmap b = bitmapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
             Messages_Common_Class.markerList.put(driverGeoModel.getKey(),
                     googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(driverGeoModel.getGeoLocation().latitude,driverGeoModel.getGeoLocation().longitude))
                             .flat(true)
                             .title("Driver Information")
                             .snippet("Driver Phone number")
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.car))));
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))));
 
         }
 
