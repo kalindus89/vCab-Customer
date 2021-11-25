@@ -23,9 +23,9 @@ import com.vcab.vcabcustomer.authentication.UserAuthenticationActivity;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -38,7 +38,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         Completable.timer(3, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Action() {
             @Override
-            public void run() throws Throwable {
+            public void run() {
 
                 checkPermissions();
 
