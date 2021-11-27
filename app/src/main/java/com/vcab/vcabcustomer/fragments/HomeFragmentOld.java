@@ -118,16 +118,6 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private IGoogleApiInterface iGoogleApiInterface; // for api request through retrofit
 
-    //moving marker or car
-    private List<LatLng> polylineList;
-    private Handler handler;
-    private int index, next;
-    private LatLng start, end;
-    private float v;
-    private double lat,lng;
-
-
-
     public void stopLocationUpdates() {
         if (fusedLocationProviderClient != null) {
             fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
@@ -197,57 +187,105 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         return v;
     }
 
-    private void updateDriverLocationManually() {
-        try{
-            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Nugegoda"); //DriversLocation path
-            DatabaseReference currentUserRef =driversLocationRef.child("rwPmUIaCDZOw5oJvSx7mMFXrTxx2");//path inside DriversLocation
+    private void updateBackDriverLocationManually() {
+        try {
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference currentUserRef = driversLocationRef.child("rwPmUIaCDZOw5oJvSx7mMFXrTxx2");//path inside DriversLocation
 
-            GeoFire  geoFire = new GeoFire(driversLocationRef);
+            GeoFire geoFire = new GeoFire(driversLocationRef);
 
             geoFire.setLocation("rwPmUIaCDZOw5oJvSx7mMFXrTxx2", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
-                  // 6.87487162505107, 79.89882122584598
-                    new GeoLocation(6.87423252292433, 79.9022490889011), new GeoFire.CompletionListener() {
+                    // 6.87487162505107, 79.89882122584598
+                    new GeoLocation(6.7772185, 80.0994741), new GeoFire.CompletionListener() {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
 
-                            if (error!=null){
-                                Messages_Common_Class.showToastMsg(error.getMessage(),getActivity());
-                            }else {
-                                Messages_Common_Class.showToastMsg("updated",getActivity());
+                            if (error != null) {
+                                Messages_Common_Class.showToastMsg(error.getMessage(), getActivity());
+                            } else {
+                                Messages_Common_Class.showToastMsg("updated", getActivity());
                             }
 
                         }
                     });
 
-        }catch (Exception e){
-            Messages_Common_Class.showToastMsg(e.getMessage(),getActivity());
+        } catch (Exception e) {
+            Messages_Common_Class.showToastMsg(e.getMessage(), getActivity());
+        }
+        try {
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference currentUserRef = driversLocationRef.child("XNMz5m2OT8XBxFSv2glQx4upg7j1");//path inside DriversLocation
+
+            GeoFire geoFire = new GeoFire(driversLocationRef);
+
+            geoFire.setLocation("XNMz5m2OT8XBxFSv2glQx4upg7j1", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
+                    // 6.87487162505107, 79.89882122584598
+                    new GeoLocation(6.7772506, 80.0995489), new GeoFire.CompletionListener() {
+                        @Override
+                        public void onComplete(String key, DatabaseError error) {
+
+                            if (error != null) {
+                                Messages_Common_Class.showToastMsg(error.getMessage(), getActivity());
+                            } else {
+                                Messages_Common_Class.showToastMsg("updated", getActivity());
+                            }
+
+                        }
+                    });
+
+        } catch (Exception e) {
+            Messages_Common_Class.showToastMsg(e.getMessage(), getActivity());
         }
     }
 
-    private void updateBackDriverLocationManually() {
-        try{
-            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Nugegoda"); //DriversLocation path
-            DatabaseReference currentUserRef =driversLocationRef.child("rwPmUIaCDZOw5oJvSx7mMFXrTxx2");//path inside DriversLocation
+    private void updateDriverLocationManually() {
+        try {
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference currentUserRef = driversLocationRef.child("rwPmUIaCDZOw5oJvSx7mMFXrTxx2");//path inside DriversLocation
 
-            GeoFire  geoFire = new GeoFire(driversLocationRef);
+            GeoFire geoFire = new GeoFire(driversLocationRef);
 
             geoFire.setLocation("rwPmUIaCDZOw5oJvSx7mMFXrTxx2", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
-                  // 6.87487162505107, 79.89882122584598
+                    // 6.87487162505107, 79.89882122584598
                     new GeoLocation(6.875638546442585, 79.89238928869797), new GeoFire.CompletionListener() {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
 
-                            if (error!=null){
-                                Messages_Common_Class.showToastMsg(error.getMessage(),getActivity());
-                            }else {
-                                Messages_Common_Class.showToastMsg("updated",getActivity());
+                            if (error != null) {
+                                Messages_Common_Class.showToastMsg(error.getMessage(), getActivity());
+                            } else {
+                                Messages_Common_Class.showToastMsg("updated", getActivity());
                             }
 
                         }
                     });
 
-        }catch (Exception e){
-            Messages_Common_Class.showToastMsg(e.getMessage(),getActivity());
+        } catch (Exception e) {
+            Messages_Common_Class.showToastMsg(e.getMessage(), getActivity());
+        }
+        try {
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference currentUserRef = driversLocationRef.child("XNMz5m2OT8XBxFSv2glQx4upg7j1");//path inside DriversLocation
+
+            GeoFire geoFire = new GeoFire(driversLocationRef);
+
+            geoFire.setLocation("XNMz5m2OT8XBxFSv2glQx4upg7j1", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
+                    // 6.87487162505107, 79.89882122584598
+                    new GeoLocation(6.7106, 79.9074), new GeoFire.CompletionListener() {
+                        @Override
+                        public void onComplete(String key, DatabaseError error) {
+
+                            if (error != null) {
+                                Messages_Common_Class.showToastMsg(error.getMessage(), getActivity());
+                            } else {
+                                Messages_Common_Class.showToastMsg("updated", getActivity());
+                            }
+
+                        }
+                    });
+
+        } catch (Exception e) {
+            Messages_Common_Class.showToastMsg(e.getMessage(), getActivity());
         }
     }
 
@@ -358,6 +396,12 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                 try {
                     addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     cityName = addressList.get(0).getLocality();
+
+                    if (cityName == null) {
+                        cityName = addressList.get(0).getAddressLine(0);
+                    }
+
+                    //   System.out.println("aaaaaaaaaa "+cityName);
 
                     //Query
                     DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child(cityName); //DriversLocation path
@@ -649,8 +693,8 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                     googleMap.addMarker(new MarkerOptions()
                             .position(new LatLng(driverGeoModel.getGeoLocation().latitude, driverGeoModel.getGeoLocation().longitude))
                             .flat(true)
-                            .title("Driver Information")
-                            .snippet("Driver Phone Number")
+                            .title(driverGeoModel.getDriverInfoModel().getName())
+                            .snippet(driverGeoModel.getDriverInfoModel().getPhone())
                             .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))));
 
         }
@@ -676,17 +720,16 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                             driverLocation.removeEventListener(this); // remove event listner
                         }
 
-                    }
-                    else {
-                      //  System.out.println("aaaaa666");
+                    } else {
+                        //  System.out.println("aaaaa666");
                         if (Messages_Common_Class.markerList.get(driverGeoModel.getKey()) != null) {
 
                             GeoQueryModel geoQueryModel = snapshot.getValue(GeoQueryModel.class);
-                            AnimationModel animationModel = new AnimationModel(false,geoQueryModel);
+                            AnimationModel animationModel = new AnimationModel(false, geoQueryModel);
 
-                            if(Messages_Common_Class.driverLocationSubscribe.get(driverGeoModel.getKey()) !=null){
+                            if (Messages_Common_Class.driverLocationSubscribe.get(driverGeoModel.getKey()) != null) {
 
-                                Marker currentMaker=Messages_Common_Class.markerList.get(driverGeoModel.getKey());
+                                Marker currentMaker = Messages_Common_Class.markerList.get(driverGeoModel.getKey());
                                 AnimationModel oldPosition = Messages_Common_Class.driverLocationSubscribe.get(driverGeoModel.getKey());
 
                                 //driver old location
@@ -696,16 +739,16 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                                         .toString();
 
                                 //driver new location
-                                String to  = new StringBuilder().append(animationModel.getGeoQueryModel().getL().get(0))
+                                String to = new StringBuilder().append(animationModel.getGeoQueryModel().getL().get(0))
                                         .append(",")
                                         .append(animationModel.getGeoQueryModel().getL().get(1))
                                         .toString();
 
-                                moveMarkerAnimation(driverGeoModel.getKey(),animationModel,currentMaker,from,to);
+                                moveMarkerAnimation(driverGeoModel.getKey(), animationModel, currentMaker, from, to);
 
-                            }else{
+                            } else {
                                 //First location Init
-                                Messages_Common_Class.driverLocationSubscribe.put(driverGeoModel.getKey(),animationModel);
+                                Messages_Common_Class.driverLocationSubscribe.put(driverGeoModel.getKey(), animationModel);
                             }
 
                         }
@@ -726,79 +769,87 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
     private void moveMarkerAnimation(String key, AnimationModel animationModel, Marker currentMaker, String from, String to) {
 
-        if(!animationModel.isRun()){
+        if (!animationModel.isRun()) {
 
             //request API
             compositeDisposable.add(iGoogleApiInterface.getDirection("driving",
-                    "less_driving",from,to,
+                    "less_driving", from, to,
                     getString(R.string.google_map_api_key))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(returnResults->{
+                    .subscribe(returnResults -> {
 
-                       // Log.d("Api_return",returnResults);
+                        // Log.d("Api_return",returnResults);
 
                         try {
 
                             JSONObject jsonObject = new JSONObject(returnResults);
                             JSONArray jsonArray = jsonObject.getJSONArray("routes");
 
-                            for(int i=0; i<jsonArray.length();i++){
+                            for (int i = 0; i < jsonArray.length(); i++) {
 
-                                JSONObject route=jsonArray.getJSONObject(i);
+                                JSONObject route = jsonArray.getJSONObject(i);
                                 JSONObject poly = route.getJSONObject("overview_polyline");
-                                String polyline=poly.getString("points");
+                                String polyline = poly.getString("points");
 
-                                polylineList = Messages_Common_Class.decodePoly(polyline);
+                                animationModel.setPolylineList(Messages_Common_Class.decodePoly(polyline));
 
                             }
 
                             //Moving
-                            handler = new Handler();
-                            index=1;
-                            next=1;
+                            //  animationModel.setHandler(); = new Handler();
+
+                            animationModel.setIndex(1);
+                            animationModel.setNext(1);
+
 
                             Runnable runnable = new Runnable() {
                                 @Override
                                 public void run() {
 
-                                    if (polylineList.size()>1){
+                                    if (animationModel.getPolylineList() != null && animationModel.getPolylineList().size() > 1) {
 
-                                        if(index<polylineList.size()-2){
-                                            index++;
-                                            next =index+1;
-                                            start =polylineList.get(index);
-                                            end=polylineList.get(next);
+                                        if (animationModel.getIndex() < animationModel.getPolylineList().size() - 2) {
+
+                                            animationModel.setIndex(animationModel.getIndex() + 1);
+                                            animationModel.setNext(animationModel.getIndex() + 1);
+
+                                            animationModel.setStart(animationModel.getPolylineList().get(animationModel.getIndex()));
+                                            animationModel.setEnd(animationModel.getPolylineList().get(animationModel.getNext()));
 
                                         }
-                                        ValueAnimator valueAnimator = ValueAnimator.ofInt(0,1);
+                                        ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 1);
                                         valueAnimator.setDuration(3000);
                                         valueAnimator.setInterpolator(new LinearInterpolator());
                                         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                             @Override
                                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                                v = valueAnimator.getAnimatedFraction();
-                                                lat = v*end.latitude +(1-v) *start.latitude;
-                                                lng = v*end.longitude +(1-v) *start.longitude;
 
-                                                LatLng newPos =new LatLng(lat,lng);
+                                                animationModel.setV(valueAnimator.getAnimatedFraction());
+
+                                                animationModel.setLat(animationModel.getV() * animationModel.getEnd().latitude
+                                                        + (1 - animationModel.getV()) * animationModel.getStart().latitude);
+
+                                                animationModel.setLng(animationModel.getV() * animationModel.getEnd().longitude
+                                                        + (1 - animationModel.getV()) * animationModel.getStart().longitude);
+
+                                                LatLng newPos = new LatLng(animationModel.getLat(), animationModel.getLng());
 
                                                 currentMaker.setPosition(newPos);
-                                                currentMaker.setAnchor(0.5f,0.5f);
-                                                currentMaker.setRotation(Messages_Common_Class.getBearing(start,newPos));
+                                                currentMaker.setAnchor(0.5f, 0.5f);
+                                                currentMaker.setRotation(Messages_Common_Class.getBearing(animationModel.getStart(), newPos));
                                             }
                                         });
 
                                         valueAnimator.start();
-                                        if(index<polylineList.size()-2){ // reach destination
+                                        if (animationModel.getIndex() < animationModel.getPolylineList().size() - 2) { // reach destination
 
-                                            handler.postDelayed(this,1500);
+                                            animationModel.getHandler().postDelayed(this, 1500);
 
-                                        }
-                                        else if(index<polylineList.size()-1){ // done
+                                        } else if (animationModel.getIndex() < animationModel.getPolylineList().size() - 1) { // done
 
-                                           animationModel.setRun(false);
-                                           Messages_Common_Class.driverLocationSubscribe.put(key,animationModel); //update data
+                                            animationModel.setRun(false);
+                                            Messages_Common_Class.driverLocationSubscribe.put(key, animationModel); //update data
 
                                         }
 
@@ -809,11 +860,11 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                             };
 
                             //run handler
-                            handler.postDelayed(runnable,1500);
+                            animationModel.getHandler().postDelayed(runnable, 1500);
 
-                        }catch (Exception e){
-                            Log.d("aaaaaaaa",e.getMessage());
-                           // Messages_Common_Class.showToastMsg("Error in web service direction",getActivity());
+                        } catch (Exception e) {
+                            Log.d("aaaaaaaa", e.getMessage());
+                            // Messages_Common_Class.showToastMsg("Error in web service direction",getActivity());
                         }
 
                     }));
