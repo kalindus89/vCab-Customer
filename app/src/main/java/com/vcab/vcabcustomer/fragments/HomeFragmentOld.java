@@ -2,6 +2,7 @@ package com.vcab.vcabcustomer.fragments;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -26,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.airbnb.lottie.L;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -68,15 +70,18 @@ import com.google.firebase.firestore.GeoPoint;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.vcab.vcabcustomer.Messages_Common_Class;
 import com.vcab.vcabcustomer.R;
+import com.vcab.vcabcustomer.RequestDriverActivity;
 import com.vcab.vcabcustomer.call_back_interfaces.IFirebaseDriverInfoListener;
 import com.vcab.vcabcustomer.call_back_interfaces.IFirebaseFailedListener;
 import com.vcab.vcabcustomer.model.AnimationModel;
 import com.vcab.vcabcustomer.model.DriverGeoModel;
 import com.vcab.vcabcustomer.model.DriverInfoModel;
 import com.vcab.vcabcustomer.model.GeoQueryModel;
+import com.vcab.vcabcustomer.model.SelectPlaceEvent;
 import com.vcab.vcabcustomer.retrofit_remote.IGoogleApiInterface;
 import com.vcab.vcabcustomer.retrofit_remote.RetrofitClient;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -314,22 +319,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
         Places.initialize(getContext(), getString(R.string.google_map_api_key));
 
-        autocompleteSupportFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocompleteSupportFragment);
-        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.ADDRESS, Place.Field.NAME, Place.Field.LAT_LNG)); // values we need
-        autocompleteSupportFragment.setHint("Choose destination");
-        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onError(@NonNull Status status) {
-                Messages_Common_Class.showSnackBar(status.getStatusMessage(), getView());
-            }
-
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                Messages_Common_Class.showSnackBar(place.getAddress() + " - " + place.getLatLng(), getView()); // we can get only values which we define in setPlaceFields
-
-            }
-        });
-
+        enableLocationAutocomplete();
 
         iGoogleApiInterface = RetrofitClient.getInstance().create(IGoogleApiInterface.class);
 
@@ -400,6 +390,53 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
 
         loadAvailableDrivers();
+    }
+
+    private void enableLocationAutocomplete() {
+
+        autocompleteSupportFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocompleteSupportFragment);
+        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.ADDRESS, Place.Field.NAME, Place.Field.LAT_LNG)); // values we need
+        autocompleteSupportFragment.setHint("Choose destination");
+        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onError(@NonNull Status status) {
+                Messages_Common_Class.showSnackBar(status.getStatusMessage(), getView());
+            }
+
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+
+               // Messages_Common_Class.showSnackBar(place.getAddress() + " - " + place.getLatLng(), getView()); // we can get only values which we define in setPlaceFields
+
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+
+                        LatLng userOrigin = new LatLng(location.getLatitude(),location.getLongitude()); // or user pick up start location
+                        LatLng userDestination = new LatLng(place.getLatLng().latitude,place.getLatLng().longitude); // trip end location
+
+                        startActivity(new Intent(getActivity(), RequestDriverActivity.class));
+                        EventBus.getDefault().postSticky(new SelectPlaceEvent(userOrigin,userDestination));
+
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Messages_Common_Class.showToastMsg(e.getMessage(), getContext());
+
+                    }
+                });
+
+            }
+        });
+
     }
 
     private void setRestrictPlaceInCountry(List<Address> addressList) {
@@ -539,8 +576,8 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                             }
                         });
 
-                    }else {
-                        Messages_Common_Class.showSnackBar("Location Empty",getView());
+                    } else {
+                        Messages_Common_Class.showSnackBar("Location Empty", getView());
                     }
 
                 } catch (IOException e) {

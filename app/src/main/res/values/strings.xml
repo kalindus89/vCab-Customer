@@ -2,5 +2,6 @@
     <string name="app_name">v Cab Customer</string>
     <string name="google_map_api_key">AIzaSyD0wRAc627leabR043mvmSq-uwK6U8o1Ig</string>
     <string name="d_channel_id">vcab_channel</string>
+    <string name="title_activity_request_driver">RequestDriverActivity</string>
 
 </resources>
