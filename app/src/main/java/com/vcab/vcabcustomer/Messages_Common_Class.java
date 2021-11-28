@@ -2,6 +2,7 @@ package com.vcab.vcabcustomer;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -12,6 +13,7 @@ import com.vcab.vcabcustomer.model.DriverGeoModel;
 
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -83,5 +85,17 @@ public class Messages_Common_Class {
         else if (begin.latitude < end.latitude && begin.longitude >= end.longitude)
             return (float) ((90 - Math.toDegrees(Math.atan(lng / lat))) + 270);
         return -1;
+    }
+
+    public static void setWelcomeMessage(TextView welcome_text) {
+
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if(hour >=1 && hour <=12){
+            welcome_text.setText("Good morning");
+        } else if(hour >=13 && hour <=17){
+            welcome_text.setText("Good afternoon");
+        }else{
+            welcome_text.setText("Good evening");
+        }
     }
 }
