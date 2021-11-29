@@ -26,4 +26,19 @@ public class SelectPlaceEvent {
     public void setUserDestination(LatLng userDestination) {
         this.userDestination = userDestination;
     }
+
+    public String getUserOriginString() {
+
+        return new StringBuilder().append(userOrigin.latitude)
+                .append(",")
+                .append(userOrigin.longitude)
+                .toString();
+    }
+
+    public String getUserDestinationString() {
+        return new StringBuilder().append(userDestination.latitude)
+                .append(",")
+                .append(userDestination.longitude)
+                .toString();
+    }
 }

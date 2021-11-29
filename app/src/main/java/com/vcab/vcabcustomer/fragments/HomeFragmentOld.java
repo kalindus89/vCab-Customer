@@ -808,11 +808,11 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                         }
 
                     } else {
-                        //  System.out.println("aaaaa666");
+                        //  when driver location changed, animate car moving
                         if (Messages_Common_Class.markerList.get(driverGeoModel.getKey()) != null) {
 
                             GeoQueryModel geoQueryModel = snapshot.getValue(GeoQueryModel.class);
-                            AnimationModel animationModel = new AnimationModel(false, geoQueryModel);
+                            AnimationModel newPosition = new AnimationModel(false, geoQueryModel);
 
                             if (Messages_Common_Class.driverLocationSubscribe.get(driverGeoModel.getKey()) != null) {
 
@@ -826,16 +826,16 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                                         .toString();
 
                                 //driver new location
-                                String to = new StringBuilder().append(animationModel.getGeoQueryModel().getL().get(0))
+                                String to = new StringBuilder().append(newPosition.getGeoQueryModel().getL().get(0))
                                         .append(",")
-                                        .append(animationModel.getGeoQueryModel().getL().get(1))
+                                        .append(newPosition.getGeoQueryModel().getL().get(1))
                                         .toString();
 
-                                moveMarkerAnimation(driverGeoModel.getKey(), animationModel, currentMaker, from, to);
+                                moveMarkerAnimation(driverGeoModel.getKey(), newPosition, currentMaker, from, to);
 
                             } else {
                                 //First location Init
-                                Messages_Common_Class.driverLocationSubscribe.put(driverGeoModel.getKey(), animationModel);
+                                Messages_Common_Class.driverLocationSubscribe.put(driverGeoModel.getKey(), newPosition);
                             }
 
                         }
@@ -906,7 +906,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
                                         }
                                         ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 1);
-                                        valueAnimator.setDuration(3000);
+                                        valueAnimator.setDuration(3000); // car moving time from one location to another
                                         valueAnimator.setInterpolator(new LinearInterpolator());
                                         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                             @Override

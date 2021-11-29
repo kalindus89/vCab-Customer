@@ -98,4 +98,18 @@ public class Messages_Common_Class {
             welcome_text.setText("Good evening");
         }
     }
+
+    public static String formatDuration(String duration) {
+
+        if(duration.contains("mins")){
+            return duration.substring(0,duration.length()-1);//remove letter "s"
+        }else {
+            return duration;
+        }
+    }
+
+    public static String formatAddress(String start_address) {
+        int firstIndexOfComma = start_address.indexOf(",");
+        return start_address.substring(0,firstIndexOfComma); // get only address
+    }
 }
