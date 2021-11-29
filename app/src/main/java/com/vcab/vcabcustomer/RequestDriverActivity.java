@@ -1,5 +1,6 @@
 package com.vcab.vcabcustomer;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -62,6 +64,12 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     private PolylineOptions grayPolylineOptions, blackPolylineOptions;
     private List<LatLng> polylineList;
 
+    TextView txt_origin;
+
+    Button btn_confirm_vcab,btn_confirm_pickup;
+    CardView confirm_cab_layout,confirm_pickup_layout;
+    TextView txt_address_pickup;
+
     private Marker originMarker, destinationMarker;
 
     @Override
@@ -93,12 +101,55 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         binding = ActivityRequestDriverBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+
+        confirm_cab_layout=findViewById(R.id.confirm_cab_layout);
+        confirm_pickup_layout=findViewById(R.id.confirm_pickup_layout);
+        btn_confirm_vcab=findViewById(R.id.btn_confirm_vcab);
+        btn_confirm_pickup=findViewById(R.id.btn_confirm_pickup);
+        txt_address_pickup=findViewById(R.id.txt_address_pickup);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         init();
+
+        btn_confirm_vcab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confirm_cab_layout.setVisibility(View.GONE);
+                confirm_pickup_layout.setVisibility(View.VISIBLE);
+
+                setDataPickup();
+            }
+        });
+
+    }
+
+    private void setDataPickup() {
+
+        txt_address_pickup.setText(txt_origin !=null ? txt_origin.getText() : "None");
+        mMap.clear();// clear all map markers
+
+        addPickupMarker();
+    }
+
+    private void addPickupMarker() {
+
+        View view = getLayoutInflater().inflate(R.layout.pickup_info_windows, null);
+
+        //create icon for marker
+        IconGenerator iconGenerator = new IconGenerator(this);
+        iconGenerator.setContentView(view);
+        iconGenerator.setBackground(new ColorDrawable(Color.TRANSPARENT));
+        Bitmap icon = iconGenerator.makeIcon();
+
+        destinationMarker = mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                .position(selectPlaceEvent.getUserOrigin()));
+
+
     }
 
     private void init() {
@@ -262,12 +313,10 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
     private void addOriginMarker(String duration, String start_address) {
 
-        System.out.println("aaaaaaaaaaa11 " + duration + " " + start_address);
-
         View view = getLayoutInflater().inflate(R.layout.origin_info_windows, null);
 
         TextView txt_time = (TextView) view.findViewById(R.id.txt_time);
-        TextView txt_origin = (TextView) view.findViewById(R.id.txt_origin);
+        txt_origin = (TextView) view.findViewById(R.id.txt_origin);
 
         txt_time.setText(Messages_Common_Class.formatDuration(duration));
         txt_origin.setText(Messages_Common_Class.formatAddress(start_address));
@@ -286,7 +335,6 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     }
 
     private void addDestinationMarker(String end_address) {
-        System.out.println("aaaaaaaaaaa11 " + end_address);
 
         View view = getLayoutInflater().inflate(R.layout.destination_info_windows, null);
 
