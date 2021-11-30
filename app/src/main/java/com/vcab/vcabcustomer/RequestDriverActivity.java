@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +38,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.SquareCap;
 import com.google.maps.android.ui.IconGenerator;
 import com.vcab.vcabcustomer.databinding.ActivityRequestDriverBinding;
+import com.vcab.vcabcustomer.model.DriverGeoModel;
 import com.vcab.vcabcustomer.model.SelectPlaceEvent;
 import com.vcab.vcabcustomer.retrofit_remote.IGoogleApiInterface;
 import com.vcab.vcabcustomer.retrofit_remote.RetrofitClient;
@@ -73,6 +75,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     CardView confirm_cab_layout,confirm_pickup_layout,find_your_driver_layout;
     TextView txt_address_pickup;
     View fill_maps;
+    RelativeLayout main_request_layout;
 
     private Marker originMarker, destinationMarker;
 
@@ -121,6 +124,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         txt_address_pickup=findViewById(R.id.txt_address_pickup);
         fill_maps=findViewById(R.id.fill_maps);
         find_your_driver_layout=findViewById(R.id.find_your_driver_layout);
+        main_request_layout=findViewById(R.id.main_request_layout);
 
         btn_confirm_vcab=findViewById(R.id.btn_confirm_vcab);
         btn_confirm_pickup=findViewById(R.id.btn_confirm_pickup);
@@ -204,7 +208,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
         });
 
-        startMapCameraSpinningAnimation(mMap.getCameraPosition().target);
+        startMapCameraSpinningAnimation(userOrigin);
 
     }
 
@@ -231,7 +235,46 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         });
         animatorCam.start();
 
+        findNearByDriver(target);
 
+    }
+
+    private void findNearByDriver(LatLng target) {
+
+        if(Messages_Common_Class.driverFound.size()>0){
+
+            float min_distance=0;
+
+            Location currentCustomerLocation = new Location("");
+            currentCustomerLocation.setLatitude(target.latitude);
+            currentCustomerLocation.setLongitude(target.longitude);
+
+            DriverGeoModel foundDriver= Messages_Common_Class.driverFound.get(Messages_Common_Class.driverFound.keySet().iterator().next());// default driver. first driver in list
+
+            for(String key:Messages_Common_Class.driverFound.keySet()){
+
+                Location driverLocation = new Location("");
+                driverLocation.setLatitude(Messages_Common_Class.driverFound.get(key).getGeoLocation().latitude);
+                driverLocation.setLongitude(Messages_Common_Class.driverFound.get(key).getGeoLocation().longitude);
+
+                //compare 2 location
+
+                if(min_distance==0){
+                    min_distance=driverLocation.distanceTo(currentCustomerLocation);
+                    foundDriver=Messages_Common_Class.driverFound.get(key);
+                }
+
+                else if(driverLocation.distanceTo(currentCustomerLocation)<min_distance){
+                    // if have any driver smaller min_distance, then get that one
+                    min_distance=driverLocation.distanceTo(currentCustomerLocation);
+                    foundDriver=Messages_Common_Class.driverFound.get(key);
+                }
+                Messages_Common_Class.showSnackBar("Driver found: "+foundDriver.getDriverInfoModel().getPhone(),main_request_layout);
+            }
+
+        }else{
+            Messages_Common_Class.showSnackBar("No driver found",main_request_layout);
+        }
     }
 
     @Override

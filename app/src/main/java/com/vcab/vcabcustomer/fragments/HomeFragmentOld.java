@@ -204,14 +204,14 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
     private void updateBackDriverLocationManually() {
         try {
-            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Nugegoda"); //DriversLocation path
             DatabaseReference currentUserRef = driversLocationRef.child("rwPmUIaCDZOw5oJvSx7mMFXrTxx2");//path inside DriversLocation
 
             GeoFire geoFire = new GeoFire(driversLocationRef);
 
             geoFire.setLocation("rwPmUIaCDZOw5oJvSx7mMFXrTxx2", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
                     // 6.87487162505107, 79.89882122584598
-                    new GeoLocation(6.7772185, 80.0994741), new GeoFire.CompletionListener() {
+                    new GeoLocation(6.876093649165193, 79.89358137360661), new GeoFire.CompletionListener() {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
 
@@ -228,14 +228,14 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
             Messages_Common_Class.showToastMsg(e.getMessage(), getActivity());
         }
         try {
-            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Nugegoda"); //DriversLocation path
             DatabaseReference currentUserRef = driversLocationRef.child("XNMz5m2OT8XBxFSv2glQx4upg7j1");//path inside DriversLocation
 
             GeoFire geoFire = new GeoFire(driversLocationRef);
 
             geoFire.setLocation("XNMz5m2OT8XBxFSv2glQx4upg7j1", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
                     // 6.87487162505107, 79.89882122584598
-                    new GeoLocation(6.7772506, 80.0995489), new GeoFire.CompletionListener() {
+                    new GeoLocation(6.876093649165193, 79.89358137360661), new GeoFire.CompletionListener() {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
 
@@ -255,14 +255,13 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
     private void updateDriverLocationManually() {
         try {
-            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Nugegoda"); //DriversLocation path
             DatabaseReference currentUserRef = driversLocationRef.child("rwPmUIaCDZOw5oJvSx7mMFXrTxx2");//path inside DriversLocation
 
             GeoFire geoFire = new GeoFire(driversLocationRef);
 
             geoFire.setLocation("rwPmUIaCDZOw5oJvSx7mMFXrTxx2", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
-                    // 6.87487162505107, 79.89882122584598
-                    new GeoLocation(6.875638546442585, 79.89238928869797), new GeoFire.CompletionListener() {
+                    new GeoLocation(6.874602413384615, 79.89808748438564), new GeoFire.CompletionListener() {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
 
@@ -279,14 +278,14 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
             Messages_Common_Class.showToastMsg(e.getMessage(), getActivity());
         }
         try {
-            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Kidelpitiya - Gorokgoda - Kahawala Rd, Sri Lanka"); //DriversLocation path
+            DatabaseReference driversLocationRef = FirebaseDatabase.getInstance().getReference("DriversLocation").child("Nugegoda"); //DriversLocation path
             DatabaseReference currentUserRef = driversLocationRef.child("XNMz5m2OT8XBxFSv2glQx4upg7j1");//path inside DriversLocation
 
             GeoFire geoFire = new GeoFire(driversLocationRef);
 
             geoFire.setLocation("XNMz5m2OT8XBxFSv2glQx4upg7j1", // add current driver location to firebase database. path same as currentUserRef. otherwise data not delete when app close
                     // 6.87487162505107, 79.89882122584598
-                    new GeoLocation(6.7106, 79.9074), new GeoFire.CompletionListener() {
+                    new GeoLocation(6.877137511426851, 79.89293764349532), new GeoFire.CompletionListener() {
                         @Override
                         public void onComplete(String key, DatabaseError error) {
 
@@ -499,7 +498,10 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                             @Override
                             public void onKeyEntered(String key, GeoLocation location) { //The location of a key now matches the query criteria.
-                                Messages_Common_Class.driverFound.add(new DriverGeoModel(key, location));
+
+                                if(!Messages_Common_Class.driverFound.containsKey(key)) {
+                                    Messages_Common_Class.driverFound.put(key, new DriverGeoModel(key, location)); // add if not exists
+                                }
                             }
 
                             @Override
@@ -594,11 +596,11 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
         if (Messages_Common_Class.driverFound.size() > 0) {
 
-            Observable.fromIterable(Messages_Common_Class.driverFound)
+            Observable.fromIterable(Messages_Common_Class.driverFound.keySet())
                     .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread()).subscribe(driverGeoModel -> {
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(key -> {
 
-                findDriverByKey(driverGeoModel);
+                findDriverByKey(Messages_Common_Class.driverFound.get(key));
 
             }, throwable -> {
 
@@ -629,6 +631,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         driverGeoModel.setDriverInfoModel(document.toObject(DriverInfoModel.class));
+                        Messages_Common_Class.driverFound.get(driverGeoModel.getKey()).setDriverInfoModel(document.toObject(DriverInfoModel.class)); // set driver details
                         iFirebaseDriverInfoListener.onDriverInfoLoadSuccess(driverGeoModel);
                     }
                 } else {

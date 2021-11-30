@@ -18,12 +18,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Messages_Common_Class {
 
 
-    public static Set<DriverGeoModel> driverFound = new HashSet<DriverGeoModel>();
+    public static HashMap<String,DriverGeoModel> driverFound = new HashMap<String,DriverGeoModel>();
 
     // https://abhiandroid.com/java/hashmap  more about HashMaps .. key and value
     public static HashMap<String, Marker> markerList = new HashMap<String, Marker>();
