@@ -23,6 +23,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -67,10 +70,21 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     TextView txt_origin;
 
     Button btn_confirm_vcab,btn_confirm_pickup;
-    CardView confirm_cab_layout,confirm_pickup_layout;
+    CardView confirm_cab_layout,confirm_pickup_layout,find_your_driver_layout;
     TextView txt_address_pickup;
+    View fill_maps;
 
     private Marker originMarker, destinationMarker;
+
+    //effect
+    private Circle lastUserCircle;
+    private long duration = 1000;
+    private ValueAnimator lastPlusAnimator;
+
+    //slowly camera spinning;
+    private ValueAnimator animatorCam;
+    private static final int DESIRED_NUM_OF_SPINS=5;
+    private static final int DESIRED_SECONDS_PER_ONE_FULL_360_SPIN=40;
 
     @Override
     protected void onStart() {
@@ -104,9 +118,12 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
         confirm_cab_layout=findViewById(R.id.confirm_cab_layout);
         confirm_pickup_layout=findViewById(R.id.confirm_pickup_layout);
+        txt_address_pickup=findViewById(R.id.txt_address_pickup);
+        fill_maps=findViewById(R.id.fill_maps);
+        find_your_driver_layout=findViewById(R.id.find_your_driver_layout);
+
         btn_confirm_vcab=findViewById(R.id.btn_confirm_vcab);
         btn_confirm_pickup=findViewById(R.id.btn_confirm_pickup);
-        txt_address_pickup=findViewById(R.id.txt_address_pickup);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -125,6 +142,102 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
             }
         });
 
+        btn_confirm_pickup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                 if(mMap ==null) return;
+                 if(selectPlaceEvent ==null) return;
+
+                 //clear map
+                mMap.clear();
+
+                // camera angle
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(selectPlaceEvent.getUserOrigin())
+                        .tilt(45f)
+                        .zoom(16f)
+                        .build();
+
+                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                //startAnimation
+                addMarkerWithPlusAnimation();
+
+
+            }
+        });
+
+    }
+
+    private void addMarkerWithPlusAnimation() {
+
+        confirm_pickup_layout.setVisibility(View.GONE);
+        fill_maps.setVisibility(View.VISIBLE); // makes map more darker
+        find_your_driver_layout.setVisibility(View.VISIBLE); // makes map more darker
+
+        originMarker = mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.defaultMarker())
+                .position(selectPlaceEvent.getUserOrigin()));
+
+        addPulsatingEffect(selectPlaceEvent.getUserOrigin());
+
+    }
+
+
+
+    private void addPulsatingEffect(LatLng userOrigin) {
+
+        if(lastPlusAnimator !=null)lastPlusAnimator.cancel();
+        if(lastUserCircle !=null)lastUserCircle.setCenter(userOrigin);
+
+        //add circle to marker
+        lastPlusAnimator =Messages_Common_Class.valueAnimate(duration,animation->{
+            if(lastUserCircle !=null)lastUserCircle.setRadius((float)animation.getAnimatedValue());
+            else{
+                lastUserCircle =mMap.addCircle(new CircleOptions()
+                .center(userOrigin)
+                .radius((Float)animation.getAnimatedValue())
+                .strokeColor(Color.WHITE).fillColor(Color.parseColor("#33333333"))
+                );
+            }
+
+        });
+
+        startMapCameraSpinningAnimation(mMap.getCameraPosition().target);
+
+    }
+
+    private void startMapCameraSpinningAnimation(LatLng target) {
+
+        if(animatorCam !=null) animatorCam.cancel();
+        animatorCam=ValueAnimator.ofFloat(0,DESIRED_NUM_OF_SPINS*360);
+        animatorCam.setDuration(DESIRED_SECONDS_PER_ONE_FULL_360_SPIN*DESIRED_NUM_OF_SPINS*1000);
+        animatorCam.setInterpolator(new LinearInterpolator());
+        animatorCam.setStartDelay(100);
+        animatorCam.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+
+                Float newBearingValue=(Float) valueAnimator.getAnimatedValue();
+
+                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
+                .target(target)
+                .zoom(16f)
+                .tilt(45f)
+                .bearing(newBearingValue)
+                .build()));
+            }
+        });
+        animatorCam.start();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(animatorCam!=null) animatorCam.end();
+        super.onDestroy();
     }
 
     private void setDataPickup() {

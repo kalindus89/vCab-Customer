@@ -8,11 +8,25 @@
     android:orientation="vertical"
     tools:context=".RequestDriverActivity">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/confirm_layout">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!--make map darker-->
+        <View
+            android:id="@+id/fill_maps"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/map_darker"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/confirm_layout"
@@ -20,9 +34,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
-        <include layout="@layout/layout_confirm_vcab"/>
+        <include layout="@layout/layout_confirm_vcab" />
 
-        <include layout="@layout/layout_confirm_pickup"/> <!--visibility gone. visible only after confirm cab-->
+        <include layout="@layout/layout_confirm_pickup" /> <!--visibility gone. visible only after confirm cab-->
+        <include layout="@layout/layout_finding_your_driver" /> <!--visibility gone. visible only after confirm pick up-->
 
     </FrameLayout>
 </RelativeLayout>

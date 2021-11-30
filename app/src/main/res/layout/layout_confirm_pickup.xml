@@ -22,7 +22,7 @@
             android:text="Confirm Pickup Stop"
             android:textSize="17sp" />
 
-        <androidx.viewpager.widget.ViewPager
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_margin"
