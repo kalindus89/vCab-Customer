@@ -328,7 +328,9 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         iFirebaseFailedListener = this;
         iFirebaseDriverInfoListener = this;
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        if(fusedLocationProviderClient==null){
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        }
 
    /*     locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -476,6 +478,12 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                 List<Address> addressList;
 
                 try {
+
+                    if(firstTime) {
+                        markOnMap(new LatLng(location.getLatitude(), location.getLongitude()), 16,"","");
+                        firstTime=false;
+                    }
+
                     addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
                     setRestrictPlaceInCountry(addressList);
@@ -713,6 +721,9 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                     != PackageManager.PERMISSION_GRANTED) {
 
             }
+            if(fusedLocationProviderClient==null){
+                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            }
             fusedLocationProviderClient.getLastLocation()
 
                     .addOnFailureListener(e ->
@@ -736,7 +747,19 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         layoutParams.setMargins(0, 10, 10, 0);
 
 
-       // markOnMap(new LatLng(6.8649, 79.8997), 16, "Nugegoda", "Nugegoda");
+        if(fusedLocationProviderClient==null){
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        }
+        fusedLocationProviderClient.getLastLocation()
+
+                .addOnFailureListener(e ->
+                        Messages_Common_Class.showToastMsg(e.getMessage(), getActivity()))
+
+                .addOnSuccessListener(location -> {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+                });
+
 
     }
 
