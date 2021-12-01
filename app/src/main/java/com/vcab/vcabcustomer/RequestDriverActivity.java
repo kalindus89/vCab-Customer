@@ -251,6 +251,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
             DriverGeoModel foundDriver= Messages_Common_Class.driverFound.get(Messages_Common_Class.driverFound.keySet().iterator().next());// default driver. first driver in list
 
+
             for(String key:Messages_Common_Class.driverFound.keySet()){
 
                 Location driverLocation = new Location("");
@@ -271,6 +272,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                 }
 
                // Messages_Common_Class.showSnackBar("Driver found: "+foundDriver.getDriverInfoModel().getPhone(),main_request_layout);
+
                 Messages_Common_Class.sendRequestToDriver(this,main_request_layout,foundDriver,target);
             }
 

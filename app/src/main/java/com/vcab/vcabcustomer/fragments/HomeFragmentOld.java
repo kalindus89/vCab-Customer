@@ -88,6 +88,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -187,6 +188,8 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
             @Override
             public void onClick(View view) {
                 updateDriverLocationManually();
+
+
             }
         });
 
@@ -733,7 +736,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         layoutParams.setMargins(0, 10, 10, 0);
 
 
-        markOnMap(new LatLng(6.8649, 79.8997), 16, "Nugegoda", "Nugegoda");
+       // markOnMap(new LatLng(6.8649, 79.8997), 16, "Nugegoda", "Nugegoda");
 
     }
 
@@ -806,6 +809,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
                             Messages_Common_Class.markerList.get(driverGeoModel.getKey()).remove();//remove marker
                             Messages_Common_Class.markerList.remove(driverGeoModel.getKey());//remove marker info from hash map
+                            Messages_Common_Class.driverFound.remove(driverGeoModel.getKey());//remove marker info from hash map
                             Messages_Common_Class.driverLocationSubscribe.remove(driverGeoModel.getKey());//remove driver info from hash map
                             driverLocation.removeEventListener(this); // remove event listner
                         }
