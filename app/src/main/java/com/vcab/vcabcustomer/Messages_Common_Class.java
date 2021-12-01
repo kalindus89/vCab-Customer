@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -164,6 +165,7 @@ public class Messages_Common_Class {
                         Map<String, String> notificationData = new HashMap<>();
                         notificationData.put("title", "RequestDriver");
                         notificationData.put("body", "This message represent for request driver action");
+                        notificationData.put("customerToken", FirebaseAuth.getInstance().getCurrentUser().getUid());
                         notificationData.put("PickupLocation", new StringBuilder("")
                                 .append(target.latitude)
                                 .append(",")
