@@ -271,10 +271,11 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                     foundDriver=Messages_Common_Class.driverFound.get(key);
                 }
 
-               // Messages_Common_Class.showSnackBar("Driver found: "+foundDriver.getDriverInfoModel().getPhone(),main_request_layout);
+                // Messages_Common_Class.showSnackBar("Driver found: "+foundDriver.getDriverInfoModel().getPhone(),main_request_layout);
 
-                Messages_Common_Class.sendRequestToDriver(this,main_request_layout,foundDriver,target);
             }
+
+            Messages_Common_Class.sendRequestToDriver(this,main_request_layout,foundDriver,target);
 
         }else{
             Messages_Common_Class.showSnackBar("No driver found",main_request_layout);
