@@ -18,10 +18,15 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.vcab.vcabcustomer.MainActivity;
 import com.vcab.vcabcustomer.R;
+import com.vcab.vcabcustomer.model.DeclineRequestFromDriver;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    String title,message;
+    // String title,message;
 
     @Override
     public void onNewToken(@NonNull String s) {
@@ -36,48 +41,58 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         message = remoteMessage.getData().get("message");*/
 
         // any key send by server
-        title = remoteMessage.getNotification().getTitle();
-        message = remoteMessage.getNotification().getBody();
+        //  title = remoteMessage.getNotification().getTitle();
+        //  message = remoteMessage.getNotification().getBody();
 
-        showNotification();
+        showNotification(remoteMessage);
     }
 
-    private void showNotification() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+    private void showNotification(RemoteMessage remoteMessage) {
 
-        String channelId = getString(R.string.d_channel_id);
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.taxi_icon)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.add_user_two))
-                        .setColor(Color.parseColor("#000000"))
-                        .setContentTitle(title)
-                        .setContentText(message)
-                        .setAutoCancel(true)
-                        .setPriority(NotificationCompat.PRIORITY_MAX)
-                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+        Map<String, String> dataReceive = remoteMessage.getData();
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (dataReceive != null) {
 
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, "Channel human readable title", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("vCab Customer Service");
-            channel.enableLights(true);
-            channel.setLightColor(Color.RED);
-            channel.enableVibration(true);
-            channel.setVibrationPattern(new long[]{0,1000,500,1000});
-            notificationManager.createNotificationChannel(channel);
+            if (dataReceive.get("title").equals("Decline")) { // if driver decline the request.
+                EventBus.getDefault().postSticky(new DeclineRequestFromDriver());
+            } else {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                        PendingIntent.FLAG_ONE_SHOT);
+
+                String channelId = getString(R.string.d_channel_id);
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                NotificationCompat.Builder notificationBuilder =
+                        new NotificationCompat.Builder(this, channelId)
+                                .setSmallIcon(R.drawable.taxi_icon)
+                                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.add_user_two))
+                                .setColor(Color.parseColor("#000000"))
+                                .setContentTitle("title")
+                                .setContentText("message")
+                                .setAutoCancel(true)
+                                .setPriority(NotificationCompat.PRIORITY_MAX)
+                                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                                .setSound(defaultSoundUri)
+                                .setContentIntent(pendingIntent);
+
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                // Since android Oreo notification channel is needed.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel channel = new NotificationChannel(channelId, "Channel human readable title", NotificationManager.IMPORTANCE_HIGH);
+                    channel.setDescription("vCab Customer Service");
+                    channel.enableLights(true);
+                    channel.setLightColor(Color.RED);
+                    channel.enableVibration(true);
+                    channel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+                    notificationManager.createNotificationChannel(channel);
+                }
+
+                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+
+            }
         }
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-
     }
 }

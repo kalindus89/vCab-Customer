@@ -149,7 +149,7 @@ public class Messages_Common_Class {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         IFCMService ifcmService = RetrofitFCMClient.getInstance().create(IFCMService.class);
 
-        //get Token
+        //get driver Token to send notification
 
         DocumentReference nycRef = FirebaseFirestore.getInstance().document("users/drivers/userData/" + foundDriver.getKey());
 
@@ -165,7 +165,7 @@ public class Messages_Common_Class {
                         Map<String, String> notificationData = new HashMap<>();
                         notificationData.put("title", "RequestDriver");
                         notificationData.put("body", "This message represent for request driver action");
-                        notificationData.put("customerToken", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        notificationData.put("customerUid", FirebaseAuth.getInstance().getCurrentUser().getUid());
                         notificationData.put("PickupLocation", new StringBuilder("")
                                 .append(target.latitude)
                                 .append(",")
