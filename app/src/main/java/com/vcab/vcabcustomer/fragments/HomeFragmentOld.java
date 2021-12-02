@@ -189,7 +189,6 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
             public void onClick(View view) {
                 updateDriverLocationManually();
 
-
             }
         });
 
@@ -328,9 +327,12 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         iFirebaseFailedListener = this;
         iFirebaseDriverInfoListener = this;
 
-        if(fusedLocationProviderClient==null){
+        if (fusedLocationProviderClient == null) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         }
+
+        loadAvailableDrivers();
+
 
    /*     locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -393,7 +395,6 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, Looper.myLooper());*/
 
 
-        loadAvailableDrivers();
     }
 
     private void enableLocationAutocomplete() {
@@ -410,7 +411,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
             @Override
             public void onPlaceSelected(@NonNull Place place) {
 
-               // Messages_Common_Class.showSnackBar(place.getAddress() + " - " + place.getLatLng(), getView()); // we can get only values which we define in setPlaceFields
+                // Messages_Common_Class.showSnackBar(place.getAddress() + " - " + place.getLatLng(), getView()); // we can get only values which we define in setPlaceFields
 
                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -421,11 +422,11 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                     @Override
                     public void onSuccess(Location location) {
 
-                        LatLng userOrigin = new LatLng(location.getLatitude(),location.getLongitude()); // or user pick up start location
-                        LatLng userDestination = new LatLng(place.getLatLng().latitude,place.getLatLng().longitude); // trip end location
+                        LatLng userOrigin = new LatLng(location.getLatitude(), location.getLongitude()); // or user pick up start location
+                        LatLng userDestination = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude); // trip end location
 
                         startActivity(new Intent(getActivity(), RequestDriverActivity.class));
-                        EventBus.getDefault().postSticky(new SelectPlaceEvent(userOrigin,userDestination));
+                        EventBus.getDefault().postSticky(new SelectPlaceEvent(userOrigin, userDestination));
 
 
                     }
@@ -479,11 +480,6 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
                 try {
 
-                    if(firstTime) {
-                        markOnMap(new LatLng(location.getLatitude(), location.getLongitude()), 16,"","");
-                        firstTime=false;
-                    }
-
                     addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
                     setRestrictPlaceInCountry(addressList);
@@ -510,7 +506,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                             @Override
                             public void onKeyEntered(String key, GeoLocation location) { //The location of a key now matches the query criteria.
 
-                                if(!Messages_Common_Class.driverFound.containsKey(key)) {
+                                if (!Messages_Common_Class.driverFound.containsKey(key)) {
                                     Messages_Common_Class.driverFound.put(key, new DriverGeoModel(key, location)); // add if not exists
                                 }
                             }
@@ -714,7 +710,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         }
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        googleMap.setOnMyLocationButtonClickListener(() -> { // -> lamda mark replaced new inner methods
+ /*       googleMap.setOnMyLocationButtonClickListener(() -> { // -> lamda mark replaced new inner methods
 
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -734,7 +730,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
                     });
             return true;
-        });
+        });*/
 
         //custom view for my location button in google map
         View locationButton = ((View) mapFragment.getView().findViewById(Integer.parseInt("1"))
@@ -747,7 +743,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
         layoutParams.setMargins(0, 10, 10, 0);
 
 
-        if(fusedLocationProviderClient==null){
+        if (fusedLocationProviderClient == null) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         }
         fusedLocationProviderClient.getLastLocation()
