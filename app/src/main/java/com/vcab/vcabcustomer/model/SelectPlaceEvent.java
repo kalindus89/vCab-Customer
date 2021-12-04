@@ -40,5 +40,8 @@ public class SelectPlaceEvent {
                 .append(",")
                 .append(userDestination.longitude)
                 .toString();
+
     }
+
+
 }

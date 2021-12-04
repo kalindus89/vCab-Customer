@@ -20,6 +20,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.vcab.vcabcustomer.model.AnimationModel;
 import com.vcab.vcabcustomer.model.DriverGeoModel;
+import com.vcab.vcabcustomer.model.SelectPlaceEvent;
 import com.vcab.vcabcustomer.notification_manager.FCMResponse;
 import com.vcab.vcabcustomer.notification_manager.FCMSendData;
 import com.vcab.vcabcustomer.notification_manager.IFCMService;
@@ -144,7 +145,7 @@ public class Messages_Common_Class {
 
     }
 
-    public static void sendRequestToDriver(Context requestDriverActivity, RelativeLayout main_request_layout, DriverGeoModel foundDriver, LatLng target) {
+    public static void sendRequestToDriver(Context requestDriverActivity, RelativeLayout main_request_layout, DriverGeoModel foundDriver, SelectPlaceEvent selectPlaceEvent) {
 
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         IFCMService ifcmService = RetrofitFCMClient.getInstance().create(IFCMService.class);
@@ -166,11 +167,14 @@ public class Messages_Common_Class {
                         notificationData.put("title", "RequestDriver");
                         notificationData.put("body", "This message represent for request driver action");
                         notificationData.put("customerUid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                        notificationData.put("PickupLocation", new StringBuilder("")
-                                .append(target.latitude)
-                                .append(",")
-                                .append(target.longitude)
-                                .toString());
+                        notificationData.put("PickupLocation", selectPlaceEvent.getUserOriginString());
+                        notificationData.put("CustomerDestinationLocation", selectPlaceEvent.getUserDestinationString());
+
+                        /* notificationData.put("PickupLocation", new StringBuilder("")
+                .append(selectPlaceEvent.getUserOrigin().latitude)
+                .append(",")
+                .append(selectPlaceEvent.getUserOrigin().longitude)
+                .toString());*/
 
                         FCMSendData fcmSendData = new FCMSendData(driverToken, notificationData);
 
@@ -181,10 +185,10 @@ public class Messages_Common_Class {
                                     @Override
                                     public void accept(FCMResponse fcmResponse) throws Exception {
 
-                                        if (fcmResponse.getSuccess()== 0) {
+                                        if (fcmResponse.getSuccess() == 0) {
 
                                             compositeDisposable.clear();
-                                            showSnackBar("Failed to send request to driver",main_request_layout);
+                                            showSnackBar("Failed to send request to driver", main_request_layout);
 
                                         }
 
@@ -194,7 +198,7 @@ public class Messages_Common_Class {
                                     @Override
                                     public void accept(Throwable throwable) throws Exception {
                                         compositeDisposable.clear();
-                                        showToastMsg(throwable.getMessage(),requestDriverActivity);
+                                        showToastMsg(throwable.getMessage(), requestDriverActivity);
                                     }
                                 }));
 

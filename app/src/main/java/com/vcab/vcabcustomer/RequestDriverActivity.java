@@ -125,7 +125,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
             Messages_Common_Class.driverFound.get(lastDriverCall.getKey()).setDecline(true);
             //Driver has been Decline request, just find new driver
 
-            findNearByDriver(selectPlaceEvent.getUserOrigin());
+            findNearByDriver(selectPlaceEvent);
 
         }
     }
@@ -203,15 +203,15 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                 .icon(BitmapDescriptorFactory.defaultMarker())
                 .position(selectPlaceEvent.getUserOrigin()));
 
-        addPulsatingEffect(selectPlaceEvent.getUserOrigin());
+        addPulsatingEffect(selectPlaceEvent);
 
     }
 
 
-    private void addPulsatingEffect(LatLng userOrigin) {
+    private void addPulsatingEffect(SelectPlaceEvent selectPlaceEvent) {
 
         if (lastPlusAnimator != null) lastPlusAnimator.cancel();
-        if (lastUserCircle != null) lastUserCircle.setCenter(userOrigin);
+        if (lastUserCircle != null) lastUserCircle.setCenter(selectPlaceEvent.getUserOrigin());
 
         //add circle to marker
         lastPlusAnimator = Messages_Common_Class.valueAnimate(duration, animation -> {
@@ -219,7 +219,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                 lastUserCircle.setRadius((float) animation.getAnimatedValue());
             else {
                 lastUserCircle = mMap.addCircle(new CircleOptions()
-                        .center(userOrigin)
+                        .center(selectPlaceEvent.getUserOrigin())
                         .radius((Float) animation.getAnimatedValue())
                         .strokeColor(Color.WHITE).fillColor(Color.parseColor("#33333333"))
                 );
@@ -227,11 +227,11 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
         });
 
-        startMapCameraSpinningAnimation(userOrigin);
+        startMapCameraSpinningAnimation(selectPlaceEvent);
 
     }
 
-    private void startMapCameraSpinningAnimation(LatLng target) {
+    private void startMapCameraSpinningAnimation(SelectPlaceEvent selectPlaceEvent) {
 
         if (animatorCam != null) animatorCam.cancel();
         animatorCam = ValueAnimator.ofFloat(0, DESIRED_NUM_OF_SPINS * 360);
@@ -245,7 +245,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                 Float newBearingValue = (Float) valueAnimator.getAnimatedValue();
 
                 mMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-                        .target(target)
+                        .target(selectPlaceEvent.getUserOrigin())
                         .zoom(16f)
                         .tilt(45f)
                         .bearing(newBearingValue)
@@ -254,18 +254,18 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         });
         animatorCam.start();
 
-        findNearByDriver(target);
+        findNearByDriver(selectPlaceEvent);
 
     }
 
-    private void findNearByDriver(LatLng target) {
+    private void findNearByDriver(SelectPlaceEvent selectPlaceEvent) {
 
         if (Messages_Common_Class.driverFound.size() > 0) {
 
             float min_distance = 0;
             Location currentCustomerLocation = new Location("");
-            currentCustomerLocation.setLatitude(target.latitude);
-            currentCustomerLocation.setLongitude(target.longitude);
+            currentCustomerLocation.setLatitude(selectPlaceEvent.getUserOrigin().latitude);
+            currentCustomerLocation.setLongitude(selectPlaceEvent.getUserOrigin().longitude);
 
             //  DriverGeoModel foundDriver = Messages_Common_Class.driverFound.get(Messages_Common_Class.driverFound.keySet().iterator().next());// default driver. first driver in list
             DriverGeoModel foundDriver = null;// default driver. first driver in list
@@ -309,7 +309,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
             }
 
             if (foundDriver != null) {
-                Messages_Common_Class.sendRequestToDriver(this, main_request_layout, foundDriver, target);
+                Messages_Common_Class.sendRequestToDriver(this, main_request_layout, foundDriver, selectPlaceEvent);
                 lastDriverCall = foundDriver;
             } else {
 
