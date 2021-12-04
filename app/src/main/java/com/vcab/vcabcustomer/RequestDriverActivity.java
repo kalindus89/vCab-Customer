@@ -273,8 +273,6 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
             for (String key : Messages_Common_Class.driverFound.keySet()) {
 
-                System.out.println("aaaaaaaaaa11 " + key);
-
                 Location driverLocation = new Location("");
                 driverLocation.setLatitude(Messages_Common_Class.driverFound.get(key).getGeoLocation().latitude);
                 driverLocation.setLongitude(Messages_Common_Class.driverFound.get(key).getGeoLocation().longitude);
@@ -283,13 +281,11 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
                 if (min_distance == 0) {
 
-                    min_distance = driverLocation.distanceTo(currentCustomerLocation);
-
                     if (!Messages_Common_Class.driverFound.get(key).isDecline()) { //if not driver decline or check a new driver
-                     //   System.out.println("aaaaaaaaaa22 " + key);
+                        min_distance = driverLocation.distanceTo(currentCustomerLocation);
                         foundDriver = Messages_Common_Class.driverFound.get(key); //
+                       // break;
                     } else {
-                  //     System.out.println("aaaaaaaaaa33 " + key);
                         continue; // if already decline before, just skip and continue
                     }
 
@@ -297,13 +293,13 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                 } else if (driverLocation.distanceTo(currentCustomerLocation) < min_distance) {
 
                     // if have any driver smaller min_distance, then get that one
-                    min_distance = driverLocation.distanceTo(currentCustomerLocation);
+
 
                     if (!Messages_Common_Class.driverFound.get(key).isDecline()) { //if not driver decline or check a new driver
-                       // System.out.println("aaaaaaaaaa44 " + key);
+                        min_distance = driverLocation.distanceTo(currentCustomerLocation);
                         foundDriver = Messages_Common_Class.driverFound.get(key); //
+                      //  break;
                     } else {
-                       // System.out.println("aaaaaaaaaa55 " + key);
                         continue; // if already decline before, just skip and continue
                     }
                 }
@@ -316,6 +312,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                 Messages_Common_Class.sendRequestToDriver(this, main_request_layout, foundDriver, target);
                 lastDriverCall = foundDriver;
             } else {
+
                 lastDriverCall = null;
                 Messages_Common_Class.showSnackBar("No driver found", main_request_layout);
                 finish();

@@ -828,9 +828,12 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
                             Messages_Common_Class.markerList.get(driverGeoModel.getKey()).remove();//remove marker
                             Messages_Common_Class.markerList.remove(driverGeoModel.getKey());//remove marker info from hash map
-                            Messages_Common_Class.driverFound.remove(driverGeoModel.getKey());//remove marker info from hash map
                             Messages_Common_Class.driverLocationSubscribe.remove(driverGeoModel.getKey());//remove driver info from hash map
-                            driverLocation.removeEventListener(this); // remove event listner
+
+                            if(Messages_Common_Class.driverFound!=null && Messages_Common_Class.driverFound.size()>0) {
+                                Messages_Common_Class.driverFound.remove(driverGeoModel.getKey());//remove marker info from hash map
+                                driverLocation.removeEventListener(this); // remove event listner
+                            }
                         }
 
                     } else {
@@ -887,7 +890,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
             //request API
             compositeDisposable.add(iGoogleApiInterface.getDirection("driving",
                     "less_driving", from, to,
-                    getString(R.string.google_map_api_key))
+                    getActivity().getString(R.string.google_map_api_key))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(returnResults -> {
