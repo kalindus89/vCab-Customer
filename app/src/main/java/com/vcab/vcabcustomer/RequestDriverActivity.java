@@ -17,9 +17,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -42,6 +44,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.ui.IconGenerator;
+import com.squareup.picasso.Picasso;
 import com.vcab.vcabcustomer.databinding.ActivityRequestDriverBinding;
 import com.vcab.vcabcustomer.model.AcceptRequestFromDriver;
 import com.vcab.vcabcustomer.model.DeclineRequestFromDriver;
@@ -80,8 +83,9 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     TextView txt_origin;
 
     Button btn_confirm_vcab, btn_confirm_pickup;
-    CardView confirm_cab_layout, confirm_pickup_layout, find_your_driver_layout;
-    TextView txt_address_pickup;
+    CardView confirm_cab_layout, confirm_pickup_layout, find_your_driver_layout,find_your_driver_info_layout;
+    TextView txt_address_pickup,txt_driver_name;
+    ImageView img_driver;
     View fill_maps;
     RelativeLayout main_request_layout;
 
@@ -167,7 +171,16 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
                             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-                            Messages_Common_Class.showSnackBar("Driver Accept: "+tripPlanModel.getDriverInfoModel().getName(), main_request_layout);
+                            confirm_pickup_layout.setVisibility(View.GONE);
+                            confirm_cab_layout.setVisibility(View.GONE);
+                            find_your_driver_info_layout.setVisibility(View.VISIBLE);
+
+                            //load driver information
+                            Glide.with(RequestDriverActivity.this).load(tripPlanModel.getDriverInfoModel().getProfileImage()).placeholder(R.drawable.ic_baseline_account_circle_24).into(img_driver);
+
+                            txt_driver_name.setText(tripPlanModel.getDriverInfoModel().getName());
+
+                          //  Messages_Common_Class.showSnackBar("Driver Accept: "+ main_request_layout);
 
 
                         } else {
@@ -201,6 +214,10 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
         btn_confirm_vcab = findViewById(R.id.btn_confirm_vcab);
         btn_confirm_pickup = findViewById(R.id.btn_confirm_pickup);
+
+        find_your_driver_info_layout = findViewById(R.id.find_your_driver_info_layout);
+        txt_driver_name = findViewById(R.id.txt_driver_name);
+        img_driver = findViewById(R.id.img_driver);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()

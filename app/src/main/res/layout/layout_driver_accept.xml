@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/find_your_driver_layout"
+    android:id="@+id/find_your_driver_info_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:visibility="visible">
+    android:visibility="gone">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
                     android:src="@drawable/car_display" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/driverImage"
+                    android:id="@+id/img_driver"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:src="@drawable/ic_baseline_account_circle_24" />
@@ -54,11 +54,136 @@
                     android:layout_gravity="center_horizontal"
                     android:text="Wagon R"
                     android:textColor="#737373"
-                    android:textSize="15sp"/>
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_car_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="ABC-1234"
+                    android:textColor="#737373"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="@dimen/activity_margin"
+                android:paddingTop="8dp"
+                android:paddingRight="@dimen/activity_margin"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/txt_driver_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Driver's Name"
+                    android:textColor="#737373"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="■"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:textColor="#737373"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_rating_driver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="4.83"
+                    android:drawableRight="@drawable/star_icon"
+                    android:textColor="#737373"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="■"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="5dp"
+                    android:textColor="#737373"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_foreign_language"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="Knows English"
+                    android:textColor="#737373"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="@dimen/activity_margin"
+                android:paddingTop="8dp"
+                android:paddingRight="@dimen/activity_margin"
+                android:paddingBottom="8dp"
+                android:weightSum="12">
+
+                <ImageView
+                    android:id="@+id/img_call_driver"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    app:tint="@color/black"
+                    android:src="@drawable/ic_baseline_local_phone_24" />
+                
+                <EditText
+                    android:id="@+id/edit_note"
+                    android:hint="Any pickup notes?"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    />
+
+                <ImageView
+                    android:id="@+id/img_send_note"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    app:tint="@color/black"
+                    android:src="@drawable/ic_baseline_wb_sunny_24" />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
