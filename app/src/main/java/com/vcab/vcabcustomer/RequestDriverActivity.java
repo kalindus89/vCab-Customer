@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -83,8 +84,8 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     TextView txt_origin;
 
     Button btn_confirm_vcab, btn_confirm_pickup;
-    CardView confirm_cab_layout, confirm_pickup_layout, find_your_driver_layout,find_your_driver_info_layout;
-    TextView txt_address_pickup,txt_driver_name;
+    CardView confirm_cab_layout, confirm_pickup_layout, find_your_driver_layout, find_your_driver_info_layout;
+    TextView txt_address_pickup, txt_driver_name;
     ImageView img_driver;
     View fill_maps;
     RelativeLayout main_request_layout;
@@ -96,11 +97,17 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     private Circle lastUserCircle;
     private long duration = 1000;
     private ValueAnimator lastPlusAnimator;
+    private String driverOldPosition="";
+    private int index,next;
+    private LatLng start,end;
 
     //slowly camera spinning;
     private ValueAnimator animatorCam;
     private static final int DESIRED_NUM_OF_SPINS = 5;
     private static final int DESIRED_SECONDS_PER_ONE_FULL_360_SPIN = 40;
+    private Handler handler;
+    private float v;
+    private double lat, lng;
 
     @Override
     protected void onStart() {
@@ -171,16 +178,18 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
                             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-                            confirm_pickup_layout.setVisibility(View.GONE);
-                            confirm_cab_layout.setVisibility(View.GONE);
-                            find_your_driver_info_layout.setVisibility(View.VISIBLE);
 
-                            //load driver information
-                            Glide.with(RequestDriverActivity.this).load(tripPlanModel.getDriverInfoModel().getProfileImage()).placeholder(R.drawable.ic_baseline_account_circle_24).into(img_driver);
+                            //get driver current routes
+                            String driverLocation = new StringBuilder().append(tripPlanModel.getCurrentLat())
+                                    .append(",")
+                                    .append(tripPlanModel.getCurrentLng())
+                                    .toString();
 
-                            txt_driver_name.setText(tripPlanModel.getDriverInfoModel().getName());
+                            drawLineAfterDriverAccept(tripPlanModel, driverLocation);
 
-                          //  Messages_Common_Class.showSnackBar("Driver Accept: "+ main_request_layout);
+
+
+                            //  Messages_Common_Class.showSnackBar("Driver Accept: "+ main_request_layout);
 
 
                         } else {
@@ -584,6 +593,270 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                 }));
 
 
+    }
+
+    private void drawLineAfterDriverAccept(TripPlanModel tripPlanModel, String driverLocation) {
+        compositeDisposable.add(iGoogleApiInterface.getDirection("driving",
+                "less_driving", tripPlanModel.getOriginCustomer(), driverLocation,
+                getString(R.string.google_map_api_key))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(returnResults -> {
+
+                    // Log.d("Api_return",returnResults);
+
+                    try {
+
+                        PolylineOptions blackPolylineOptions = null;
+                        List<LatLng> polylineList = null;
+                        Polyline blackPolyline;
+
+                        JSONObject jsonObject = new JSONObject(returnResults);
+                        JSONArray jsonArray = jsonObject.getJSONArray("routes");
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            JSONObject route = jsonArray.getJSONObject(i);
+                            JSONObject poly = route.getJSONObject("overview_polyline");
+                            String polyline = poly.getString("points");
+                            polylineList = Messages_Common_Class.decodePoly(polyline);
+
+                        }
+
+                        //black polyline animations
+                        blackPolylineOptions = new PolylineOptions();
+                        blackPolylineOptions.color(Color.BLACK);
+                        blackPolylineOptions.width(5);
+                        blackPolylineOptions.startCap(new SquareCap());
+                        blackPolylineOptions.jointType(JointType.ROUND);
+                        blackPolylineOptions.addAll(polylineList);
+
+                        blackPolyline = mMap.addPolyline(blackPolylineOptions);
+
+                        JSONObject object = jsonArray.getJSONObject(0);
+                        JSONArray legs = object.getJSONArray("legs"); // In this arrya has information about distance, end_location,start_address,start_location and many
+                        //https://developers.google.com/maps/documentation/directions/get-directions#DirectionsLeg
+                        JSONObject legObject = legs.getJSONObject(0);
+
+                        JSONObject time = legObject.getJSONObject("duration");
+                        String duration = time.getString("text");
+
+                        JSONObject distanceEstimate = legObject.getJSONObject("distance");
+                        String distance = distanceEstimate.getString("text");
+
+                        LatLng origin = new LatLng(Double.parseDouble(tripPlanModel.getOriginCustomer().split(",")[0]),
+                                Double.parseDouble(tripPlanModel.getOriginCustomer().split(",")[1]));
+
+                        LatLng destination = new LatLng(tripPlanModel.getCurrentLat(), tripPlanModel.getCurrentLng());
+
+                        LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                                .include(origin)
+                                .include(destination)
+                                .build();
+
+                        addPickupLocationMarkerWithDuration(duration, origin);
+                        addDriverMarker(destination);
+
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 160));
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom - 1));
+
+                        confirm_pickup_layout.setVisibility(View.GONE);
+                        confirm_cab_layout.setVisibility(View.GONE);
+                        find_your_driver_info_layout.setVisibility(View.VISIBLE);
+
+                        initDriverForMovingCar(tripPlanModel.getDriverUid(),tripPlanModel);
+
+                        //load driver information
+                        Glide.with(RequestDriverActivity.this).load(tripPlanModel.getDriverInfoModel().getProfileImage()).placeholder(R.drawable.ic_baseline_account_circle_24).into(img_driver);
+
+                        txt_driver_name.setText(tripPlanModel.getDriverInfoModel().getName());
+
+
+                    } catch (Exception e) {
+                        Log.d("aaaaaaaaerr", e.getMessage());
+                        // Messages_Common_Class.showToastMsg("Error in web service direction",getActivity());
+                    }
+
+                }));
+
+
+    }
+
+    private void initDriverForMovingCar(String driverUid, TripPlanModel tripPlanModel) {
+
+        driverOldPosition= new StringBuilder().append(tripPlanModel.getCurrentLat())
+                .append(",")
+                .append(tripPlanModel.getCurrentLng())
+                .toString();
+
+        FirebaseDatabase.getInstance().getReference("Trips").child(tripPlanModel.getDriverUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        TripPlanModel newTripPlanModel=snapshot.getValue(TripPlanModel.class);
+
+
+                        String driverNewPosition= new StringBuilder().append(newTripPlanModel.getCurrentLat())
+                                .append(",")
+                                .append(newTripPlanModel.getCurrentLng())
+                                .toString();
+
+                        if(!driverOldPosition.equals(driverNewPosition))// driver moving
+                        {
+                            moveMarkerAnimation(destinationMarker,driverOldPosition,driverNewPosition);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Messages_Common_Class.showSnackBar(error.getMessage(),main_request_layout);
+                    }
+                });
+    }
+
+    private void moveMarkerAnimation(Marker destinationMarker, String driverOldPositionFrom, String driverNewPosition) {
+
+        compositeDisposable.add(iGoogleApiInterface.getDirection("driving",
+                "less_driving", driverOldPositionFrom, driverNewPosition,
+                getString(R.string.google_map_api_key))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(returnResults -> {
+
+                    // Log.d("Api_return",returnResults);
+
+                    try {
+
+                        JSONObject jsonObject = new JSONObject(returnResults);
+                        JSONArray jsonArray = jsonObject.getJSONArray("routes");
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            JSONObject route = jsonArray.getJSONObject(i);
+                            JSONObject poly = route.getJSONObject("overview_polyline");
+                            String polyline = poly.getString("points");
+
+                            polylineList =Messages_Common_Class.decodePoly(polyline);
+
+
+
+                        }
+
+
+                        //black polyline animations
+                        blackPolylineOptions = new PolylineOptions();
+                        blackPolylineOptions.color(Color.BLACK);
+                        blackPolylineOptions.width(5);
+                        blackPolylineOptions.startCap(new SquareCap());
+                        blackPolylineOptions.jointType(JointType.ROUND);
+                        blackPolylineOptions.addAll(polylineList);
+
+                        blackPolyline = mMap.addPolyline(blackPolylineOptions);
+
+                        JSONObject object = jsonArray.getJSONObject(0);
+                        JSONArray legs = object.getJSONArray("legs"); // In this arrya has information about distance, end_location,start_address,start_location and many
+                        //https://developers.google.com/maps/documentation/directions/get-directions#DirectionsLeg
+                        JSONObject legObject = legs.getJSONObject(0);
+
+                        JSONObject time = legObject.getJSONObject("duration");
+                        String duration = time.getString("text");
+
+                        JSONObject distanceEstimate = legObject.getJSONObject("distance");
+                        String distance = distanceEstimate.getString("text");
+
+                        Bitmap bitmap =Messages_Common_Class.createIconWithDuration(RequestDriverActivity.this,duration);
+                        originMarker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
+
+                        //Moving
+
+                        handler = new Handler();
+                        index = -1;
+                        next = 1;
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if(index <polylineList.size()-2){
+
+                                    index++;
+                                    next=index+1;
+
+                                    start=polylineList.get(index);
+                                    end=polylineList.get(next);
+
+                                }
+
+                                ValueAnimator va = ValueAnimator.ofFloat(0, 1);
+                                va.setDuration(1500);
+                                va.setInterpolator(new LinearInterpolator());
+                                va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                    @Override
+                                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+
+                                        v=valueAnimator.getAnimatedFraction();
+                                        lat = v*end.latitude+(1-v)*start.latitude;
+                                        lng = v*end.longitude+(1-v)*start.longitude;
+
+                                        LatLng newPos= new LatLng(lat,lng);
+                                        destinationMarker.setPosition(newPos);
+                                        destinationMarker.setAnchor(0.5f,0.5f);
+                                        destinationMarker.setRotation(Messages_Common_Class.getBearing(start, newPos));
+
+                                        mMap.moveCamera(CameraUpdateFactory.newLatLng(newPos));
+
+
+                                    }
+                                });
+
+                                va.start();
+                                if(index<polylineList.size()-2){
+                                    handler.postDelayed(this,1500);
+                                }
+                                else if (index<polylineList.size()-2){
+
+
+                                }
+
+                            }
+                        },1500);
+
+                        driverOldPosition=driverNewPosition;
+
+
+
+                    } catch (Exception e) {
+                       // Log.d("aaaaaaaa", e.getMessage());
+                         Messages_Common_Class.showToastMsg("Error in web service direction",this);
+                    }
+
+                }, throwable -> {
+                    if(throwable!=null){
+                        Messages_Common_Class.showSnackBar(throwable.getMessage(),main_request_layout);
+                    }
+                }));
+
+
+    }
+
+
+    private void addDriverMarker(LatLng destination) {
+
+        destinationMarker = mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.car))
+                .position(destination)
+                .flat(true));
+    }
+
+    private void addPickupLocationMarkerWithDuration(String duration, LatLng origin) {
+
+        Bitmap icon = Messages_Common_Class.createIconWithDuration(this, duration);
+
+        originMarker = mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                .position(origin));
     }
 
     private void addOriginMarker(String duration, String start_address) {

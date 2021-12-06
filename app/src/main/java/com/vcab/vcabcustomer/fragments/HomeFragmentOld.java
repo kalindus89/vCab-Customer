@@ -883,7 +883,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
     }
 
-    private void moveMarkerAnimation(String key, AnimationModel animationModel, Marker currentMaker, String from, String to) {
+    private void moveMarkerAnimation(String key, AnimationModel animationModel, Marker currentMarker, String from, String to) {
 
         if (!animationModel.isRun()) {
 
@@ -951,9 +951,9 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
 
                                                 LatLng newPos = new LatLng(animationModel.getLat(), animationModel.getLng());
 
-                                                currentMaker.setPosition(newPos);
-                                                currentMaker.setAnchor(0.5f, 0.5f);
-                                                currentMaker.setRotation(Messages_Common_Class.getBearing(animationModel.getStart(), newPos));
+                                                currentMarker.setPosition(newPos);
+                                                currentMarker.setAnchor(0.5f, 0.5f);
+                                                currentMarker.setRotation(Messages_Common_Class.getBearing(animationModel.getStart(), newPos));
                                             }
                                         });
 

@@ -2,6 +2,10 @@ package com.vcab.vcabcustomer;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.maps.android.ui.IconGenerator;
 import com.vcab.vcabcustomer.model.AnimationModel;
 import com.vcab.vcabcustomer.model.DriverGeoModel;
 import com.vcab.vcabcustomer.model.SelectPlaceEvent;
@@ -212,5 +217,20 @@ public class Messages_Common_Class {
         });
 
 
+    }
+
+    public static Bitmap createIconWithDuration(Context context, String duration) {
+
+        View view = LayoutInflater.from(context).inflate(R.layout.pickup_info_with_duration_windows,null);
+
+        String tempDuration=duration.substring(0,duration.indexOf(" "));
+
+        TextView txt_duration = (TextView) view.findViewById(R.id.txt_duration);
+        txt_duration.setText(Messages_Common_Class.formatDuration(tempDuration));
+
+        IconGenerator iconGenerator = new IconGenerator(context);
+        iconGenerator.setContentView(view);
+        iconGenerator.setBackground(new ColorDrawable(Color.TRANSPARENT));
+        return iconGenerator.makeIcon();
     }
 }
