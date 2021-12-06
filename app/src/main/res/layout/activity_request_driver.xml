@@ -39,6 +39,7 @@
 
         <include layout="@layout/layout_confirm_pickup" /> <!--visibility gone. visible only after confirm cab-->
         <include layout="@layout/layout_finding_your_driver" /> <!--visibility gone. visible only after confirm pick up-->
+        <include layout="@layout/layout_driver_accept" /> <!--visibility gone. visible only after confirm pick up-->
 
     </FrameLayout>
 </RelativeLayout>
