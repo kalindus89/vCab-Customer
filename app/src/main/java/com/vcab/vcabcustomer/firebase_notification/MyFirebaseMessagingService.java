@@ -18,6 +18,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.vcab.vcabcustomer.MainActivity;
 import com.vcab.vcabcustomer.R;
+import com.vcab.vcabcustomer.model.AcceptRequestFromDriver;
 import com.vcab.vcabcustomer.model.DeclineRequestFromDriver;
 
 import org.greenrobot.eventbus.EventBus;
@@ -53,9 +54,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (dataReceive != null) {
 
-            if (dataReceive.get("title").equals("Decline")) { // if driver decline the request.
+            if (dataReceive.get("title").equals("Decline")) { // if driver decline the request. no need to get any notification values.
                 EventBus.getDefault().postSticky(new DeclineRequestFromDriver());
-            } else {
+            }
+
+            else if (dataReceive.get("title").equals("Accept")) { // if driver accept the request.
+                EventBus.getDefault().postSticky(new AcceptRequestFromDriver(dataReceive.get("tripId")
+                        ,dataReceive.get("driverUid")));
+            }
+
+            else {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,

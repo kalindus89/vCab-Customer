@@ -1,6 +1,6 @@
 package com.vcab.vcabcustomer.model;
 
-public class User {
+public class CustomerModel {
 
     private String name;
     private String phone;
@@ -8,10 +8,10 @@ public class User {
     private String profileImage;
     private String firebaseToken;
 
-    public User() {
+    public CustomerModel() {
     }
 
-    public User(String name, String phone, String email, String profileImage, String firebaseToken) {
+    public CustomerModel(String name, String phone, String email, String profileImage, String firebaseToken) {
         this.name = name;
         this.phone = phone;
         this.email = email;

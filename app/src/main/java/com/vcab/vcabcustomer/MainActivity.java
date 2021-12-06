@@ -31,7 +31,7 @@ import com.vcab.vcabcustomer.fragments.HomeFragmentOld;
 import com.vcab.vcabcustomer.fragments.ProfileFragment;
 import com.vcab.vcabcustomer.fragments.SupportFragment;
 import com.vcab.vcabcustomer.fragments.TripsFragment;
-import com.vcab.vcabcustomer.model.User;
+import com.vcab.vcabcustomer.model.CustomerModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        User user = document.toObject(User.class);
+                        CustomerModel user = document.toObject(CustomerModel.class);
 
                         userName.setText(user.getName());
                         phoneNumber.setText(user.getPhone());

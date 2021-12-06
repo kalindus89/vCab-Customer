@@ -1,5 +1,6 @@
 package com.vcab.vcabcustomer;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -36,11 +37,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.SquareCap;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.ui.IconGenerator;
 import com.vcab.vcabcustomer.databinding.ActivityRequestDriverBinding;
+import com.vcab.vcabcustomer.model.AcceptRequestFromDriver;
 import com.vcab.vcabcustomer.model.DeclineRequestFromDriver;
 import com.vcab.vcabcustomer.model.DriverGeoModel;
 import com.vcab.vcabcustomer.model.SelectPlaceEvent;
+import com.vcab.vcabcustomer.model.TripPlanModel;
 import com.vcab.vcabcustomer.retrofit_remote.IGoogleApiInterface;
 import com.vcab.vcabcustomer.retrofit_remote.RetrofitClient;
 
@@ -109,6 +116,9 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         if (EventBus.getDefault().hasSubscriberForEvent(DeclineRequestFromDriver.class)) {
             EventBus.getDefault().removeStickyEvent(DeclineRequestFromDriver.class);
         }
+        if (EventBus.getDefault().hasSubscriberForEvent(AcceptRequestFromDriver.class)) {
+            EventBus.getDefault().removeStickyEvent(AcceptRequestFromDriver.class);
+        }
 
         EventBus.getDefault().unregister(this);
     }
@@ -128,6 +138,50 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
             findNearByDriver(selectPlaceEvent);
 
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onAcceptRequestEvent(AcceptRequestFromDriver event) {
+
+        //Driver has been accept request,get trip information from firebase database
+        FirebaseDatabase.getInstance().getReference("Trips").child(event.getDriverUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            TripPlanModel tripPlanModel = snapshot.getValue(TripPlanModel.class);
+                            mMap.clear();
+                            fill_maps.setVisibility(View.GONE);
+
+                            if (animatorCam != null) {
+                                animatorCam.end();
+                            }
+
+                            CameraPosition cameraPosition = new CameraPosition.Builder()
+                                    .target(mMap.getCameraPosition().target)
+                                    .tilt(0f)
+                                    .zoom(mMap.getCameraPosition().zoom)
+                                    .build();
+
+                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                            Messages_Common_Class.showSnackBar("Driver Accept: "+tripPlanModel.getDriverInfoModel().getName(), main_request_layout);
+
+
+                        } else {
+                            Messages_Common_Class.showSnackBar("Not rip not found with the driver", main_request_layout);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
     }
 
     @Override
@@ -284,7 +338,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                     if (!Messages_Common_Class.driverFound.get(key).isDecline()) { //if not driver decline or check a new driver
                         min_distance = driverLocation.distanceTo(currentCustomerLocation);
                         foundDriver = Messages_Common_Class.driverFound.get(key); //
-                       // break;
+                        // break;
                     } else {
                         continue; // if already decline before, just skip and continue
                     }
@@ -298,7 +352,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                     if (!Messages_Common_Class.driverFound.get(key).isDecline()) { //if not driver decline or check a new driver
                         min_distance = driverLocation.distanceTo(currentCustomerLocation);
                         foundDriver = Messages_Common_Class.driverFound.get(key); //
-                      //  break;
+                        //  break;
                     } else {
                         continue; // if already decline before, just skip and continue
                     }

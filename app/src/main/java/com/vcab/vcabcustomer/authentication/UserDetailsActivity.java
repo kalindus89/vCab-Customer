@@ -33,7 +33,7 @@ import com.vcab.vcabcustomer.MainActivity;
 import com.vcab.vcabcustomer.Messages_Common_Class;
 import com.vcab.vcabcustomer.R;
 import com.vcab.vcabcustomer.SessionManagement;
-import com.vcab.vcabcustomer.model.User;
+import com.vcab.vcabcustomer.model.CustomerModel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -163,7 +163,7 @@ public class UserDetailsActivity extends AppCompatActivity {
 
     private void sendDataToCloudFirestore() {
 
-        User user = new User(fName.getText().toString(),phone_number.getText().toString(),email.getText().toString(),imageUriAccessToken,"update later");
+        CustomerModel user = new CustomerModel(fName.getText().toString(),phone_number.getText().toString(),email.getText().toString(),imageUriAccessToken,"update later");
 
         Map<String, Object> userLocation = new HashMap<>();
         userLocation.put("geo_point", (new GeoPoint(0.0,0.0)));
