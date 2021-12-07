@@ -97,9 +97,9 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     private Circle lastUserCircle;
     private long duration = 1000;
     private ValueAnimator lastPlusAnimator;
-    private String driverOldPosition="";
-    private int index,next;
-    private LatLng start,end;
+    private String driverOldPosition = "";
+    private int index, next;
+    private LatLng start, end;
 
     //slowly camera spinning;
     private ValueAnimator animatorCam;
@@ -186,7 +186,6 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                                     .toString();
 
                             drawLineAfterDriverAccept(tripPlanModel, driverLocation);
-
 
 
                             //  Messages_Common_Class.showSnackBar("Driver Accept: "+ main_request_layout);
@@ -605,11 +604,11 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
                     // Log.d("Api_return",returnResults);
 
-                    try {
+                    PolylineOptions blackPolylineOptions = null;
+                    List<LatLng> polylineList = null;
+                    Polyline blackPolyline;
 
-                        PolylineOptions blackPolylineOptions = null;
-                        List<LatLng> polylineList = null;
-                        Polyline blackPolyline;
+                    try {
 
                         JSONObject jsonObject = new JSONObject(returnResults);
                         JSONArray jsonArray = jsonObject.getJSONArray("routes");
@@ -630,7 +629,6 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                         blackPolylineOptions.startCap(new SquareCap());
                         blackPolylineOptions.jointType(JointType.ROUND);
                         blackPolylineOptions.addAll(polylineList);
-
                         blackPolyline = mMap.addPolyline(blackPolylineOptions);
 
                         JSONObject object = jsonArray.getJSONObject(0);
@@ -644,7 +642,8 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                         JSONObject distanceEstimate = legObject.getJSONObject("distance");
                         String distance = distanceEstimate.getString("text");
 
-                        LatLng origin = new LatLng(Double.parseDouble(tripPlanModel.getOriginCustomer().split(",")[0]),
+                        LatLng origin = new LatLng(
+                                Double.parseDouble(tripPlanModel.getOriginCustomer().split(",")[0]),
                                 Double.parseDouble(tripPlanModel.getOriginCustomer().split(",")[1]));
 
                         LatLng destination = new LatLng(tripPlanModel.getCurrentLat(), tripPlanModel.getCurrentLng());
@@ -660,11 +659,11 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 160));
                         mMap.moveCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom - 1));
 
+                        initDriverForMovingCar(tripPlanModel.getDriverUid(), tripPlanModel);
+
                         confirm_pickup_layout.setVisibility(View.GONE);
                         confirm_cab_layout.setVisibility(View.GONE);
                         find_your_driver_info_layout.setVisibility(View.VISIBLE);
-
-                        initDriverForMovingCar(tripPlanModel.getDriverUid(),tripPlanModel);
 
                         //load driver information
                         Glide.with(RequestDriverActivity.this).load(tripPlanModel.getDriverInfoModel().getProfileImage()).placeholder(R.drawable.ic_baseline_account_circle_24).into(img_driver);
@@ -684,7 +683,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
 
     private void initDriverForMovingCar(String driverUid, TripPlanModel tripPlanModel) {
 
-        driverOldPosition= new StringBuilder().append(tripPlanModel.getCurrentLat())
+        driverOldPosition = new StringBuilder().append(tripPlanModel.getCurrentLat())
                 .append(",")
                 .append(tripPlanModel.getCurrentLng())
                 .toString();
@@ -694,29 +693,31 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        TripPlanModel newTripPlanModel=snapshot.getValue(TripPlanModel.class);
+                        TripPlanModel newTripPlanModel = snapshot.getValue(TripPlanModel.class);
 
 
-                        String driverNewPosition= new StringBuilder().append(newTripPlanModel.getCurrentLat())
+                        String driverNewPosition = new StringBuilder().append(newTripPlanModel.getCurrentLat())
                                 .append(",")
                                 .append(newTripPlanModel.getCurrentLng())
                                 .toString();
 
-                        if(!driverOldPosition.equals(driverNewPosition))// driver moving
+                        if (!driverOldPosition.equals(driverNewPosition))// driver moving
                         {
-                            moveMarkerAnimation(destinationMarker,driverOldPosition,driverNewPosition);
+                            moveMarkerAnimation(destinationMarker, driverOldPosition, driverNewPosition);
                         }
 
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Messages_Common_Class.showSnackBar(error.getMessage(),main_request_layout);
+                        Messages_Common_Class.showSnackBar(error.getMessage(), main_request_layout);
                     }
                 });
     }
 
-    private void moveMarkerAnimation(Marker destinationMarker, String driverOldPositionFrom, String driverNewPosition) {
+    List<LatLng> polylineListCar = null;
+
+    private void moveMarkerAnimation(Marker driverMarker, String driverOldPositionFrom, String driverNewPosition) {
 
         compositeDisposable.add(iGoogleApiInterface.getDirection("driving",
                 "less_driving", driverOldPositionFrom, driverNewPosition,
@@ -728,6 +729,9 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                     // Log.d("Api_return",returnResults);
 
                     try {
+                        PolylineOptions blackPolylineOptions = null;
+                        polylineListCar = null;
+                        Polyline blackPolyline;
 
                         JSONObject jsonObject = new JSONObject(returnResults);
                         JSONArray jsonArray = jsonObject.getJSONArray("routes");
@@ -738,9 +742,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                             JSONObject poly = route.getJSONObject("overview_polyline");
                             String polyline = poly.getString("points");
 
-                            polylineList =Messages_Common_Class.decodePoly(polyline);
-
-
+                            polylineListCar = Messages_Common_Class.decodePoly(polyline);
 
                         }
 
@@ -751,7 +753,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                         blackPolylineOptions.width(5);
                         blackPolylineOptions.startCap(new SquareCap());
                         blackPolylineOptions.jointType(JointType.ROUND);
-                        blackPolylineOptions.addAll(polylineList);
+                        blackPolylineOptions.addAll(polylineListCar);
 
                         blackPolyline = mMap.addPolyline(blackPolylineOptions);
 
@@ -766,7 +768,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                         JSONObject distanceEstimate = legObject.getJSONObject("distance");
                         String distance = distanceEstimate.getString("text");
 
-                        Bitmap bitmap =Messages_Common_Class.createIconWithDuration(RequestDriverActivity.this,duration);
+                        Bitmap bitmap = Messages_Common_Class.createIconWithDuration(RequestDriverActivity.this, duration);
                         originMarker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
 
                         //Moving
@@ -779,31 +781,32 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                             @Override
                             public void run() {
 
-                                if(index <polylineList.size()-2){
+                                if (index < polylineListCar.size() - 2) {
 
                                     index++;
-                                    next=index+1;
+                                    next = index + 1;
 
-                                    start=polylineList.get(index);
-                                    end=polylineList.get(next);
+                                    start = polylineListCar.get(index);
+                                    end = polylineListCar.get(next);
 
                                 }
 
-                                ValueAnimator va = ValueAnimator.ofFloat(0, 1);
+                                ValueAnimator va = ValueAnimator.ofInt(0, 1);
                                 va.setDuration(1500);
                                 va.setInterpolator(new LinearInterpolator());
                                 va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                     @Override
                                     public void onAnimationUpdate(ValueAnimator valueAnimator) {
 
-                                        v=valueAnimator.getAnimatedFraction();
-                                        lat = v*end.latitude+(1-v)*start.latitude;
-                                        lng = v*end.longitude+(1-v)*start.longitude;
+                                        v = valueAnimator.getAnimatedFraction();
 
-                                        LatLng newPos= new LatLng(lat,lng);
-                                        destinationMarker.setPosition(newPos);
-                                        destinationMarker.setAnchor(0.5f,0.5f);
-                                        destinationMarker.setRotation(Messages_Common_Class.getBearing(start, newPos));
+                                        lat = v * end.latitude + (1 - v) * start.latitude;
+                                        lng = v * end.longitude + (1 - v) * start.longitude;
+
+                                        LatLng newPos = new LatLng(lat, lng);
+                                        driverMarker.setPosition(newPos);
+                                        driverMarker.setAnchor(0.5f, 0.5f);
+                                        driverMarker.setRotation(Messages_Common_Class.getBearing(start, newPos));
 
                                         mMap.moveCamera(CameraUpdateFactory.newLatLng(newPos));
 
@@ -812,29 +815,27 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                                 });
 
                                 va.start();
-                                if(index<polylineList.size()-2){
-                                    handler.postDelayed(this,1500);
-                                }
-                                else if (index<polylineList.size()-2){
+                                if (index < polylineListCar.size() - 2) {
+                                    handler.postDelayed(this, 1500);
+                                } else if (index < polylineListCar.size() - 1) {
 
 
                                 }
 
                             }
-                        },1500);
+                        }, 1500);
 
-                        driverOldPosition=driverNewPosition;
-
+                        driverOldPosition = driverNewPosition;
 
 
                     } catch (Exception e) {
-                       // Log.d("aaaaaaaa", e.getMessage());
-                         Messages_Common_Class.showToastMsg("Error in web service direction",this);
+                        // Log.d("aaaaaaaa", e.getMessage());
+                        Messages_Common_Class.showToastMsg("Error in web service direction", this);
                     }
 
                 }, throwable -> {
-                    if(throwable!=null){
-                        Messages_Common_Class.showSnackBar(throwable.getMessage(),main_request_layout);
+                    if (throwable != null) {
+                        Messages_Common_Class.showSnackBar(throwable.getMessage(), main_request_layout);
                     }
                 }));
 
@@ -845,9 +846,9 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
     private void addDriverMarker(LatLng destination) {
 
         destinationMarker = mMap.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.car))
                 .position(destination)
-                .flat(true));
+                .flat(true)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.car)));
     }
 
     private void addPickupLocationMarkerWithDuration(String duration, LatLng origin) {
