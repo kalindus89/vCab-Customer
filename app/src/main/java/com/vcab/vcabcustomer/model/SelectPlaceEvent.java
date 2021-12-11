@@ -5,10 +5,12 @@ import com.google.android.gms.maps.model.LatLng;
 public class SelectPlaceEvent {
 
     private LatLng userOrigin,userDestination;
+    String address;
 
-    public SelectPlaceEvent(LatLng userOrigin, LatLng userDestination) {
+    public SelectPlaceEvent(LatLng userOrigin, LatLng userDestination, String address) {
         this.userOrigin = userOrigin;
         this.userDestination = userDestination;
+        this.address=address;
     }
 
     public LatLng getUserOrigin() {
@@ -43,5 +45,11 @@ public class SelectPlaceEvent {
 
     }
 
+    public String getAddress() {
+        return address;
+    }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

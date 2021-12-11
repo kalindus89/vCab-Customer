@@ -19,6 +19,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.vcab.vcabcustomer.MainActivity;
 import com.vcab.vcabcustomer.R;
 import com.vcab.vcabcustomer.model.AcceptRequestFromDriver;
+import com.vcab.vcabcustomer.model.DeclineAndRemoveTripFromDriver;
 import com.vcab.vcabcustomer.model.DeclineRequestFromDriver;
 
 import org.greenrobot.eventbus.EventBus;
@@ -58,10 +59,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 EventBus.getDefault().postSticky(new DeclineRequestFromDriver());
             }
 
+            else if (dataReceive.get("title").equals("DeclineAndRemoveTrip")) {
+                EventBus.getDefault().postSticky(new DeclineAndRemoveTripFromDriver());
+            }
+
             else if (dataReceive.get("title").equals("Accept")) { // if driver accept the request.
                 EventBus.getDefault().postSticky(new AcceptRequestFromDriver(dataReceive.get("tripId")
                         ,dataReceive.get("driverUid")));
             }
+
+
 
             else {
                 Intent intent = new Intent(this, MainActivity.class);

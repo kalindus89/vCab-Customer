@@ -48,6 +48,7 @@ import com.google.maps.android.ui.IconGenerator;
 import com.squareup.picasso.Picasso;
 import com.vcab.vcabcustomer.databinding.ActivityRequestDriverBinding;
 import com.vcab.vcabcustomer.model.AcceptRequestFromDriver;
+import com.vcab.vcabcustomer.model.DeclineAndRemoveTripFromDriver;
 import com.vcab.vcabcustomer.model.DeclineRequestFromDriver;
 import com.vcab.vcabcustomer.model.DriverGeoModel;
 import com.vcab.vcabcustomer.model.SelectPlaceEvent;
@@ -124,11 +125,14 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         if (EventBus.getDefault().hasSubscriberForEvent(SelectPlaceEvent.class)) {
             EventBus.getDefault().removeStickyEvent(SelectPlaceEvent.class);
         }
+        if (EventBus.getDefault().hasSubscriberForEvent(AcceptRequestFromDriver.class)) {
+            EventBus.getDefault().removeStickyEvent(AcceptRequestFromDriver.class);
+        }
         if (EventBus.getDefault().hasSubscriberForEvent(DeclineRequestFromDriver.class)) {
             EventBus.getDefault().removeStickyEvent(DeclineRequestFromDriver.class);
         }
-        if (EventBus.getDefault().hasSubscriberForEvent(AcceptRequestFromDriver.class)) {
-            EventBus.getDefault().removeStickyEvent(AcceptRequestFromDriver.class);
+        if (EventBus.getDefault().hasSubscriberForEvent(DeclineAndRemoveTripFromDriver.class)) {
+            EventBus.getDefault().removeStickyEvent(DeclineAndRemoveTripFromDriver.class);
         }
 
         EventBus.getDefault().unregister(this);
@@ -149,6 +153,13 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
             findNearByDriver(selectPlaceEvent);
 
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onDeclineAndRemoveTripFromDriverEvent(DeclineAndRemoveTripFromDriver event) {
+
+        //Driver has been Decline request, just finish the activity
+        finish();
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -233,6 +244,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         mapFragment.getMapAsync(this);
 
         init();
+
 
         btn_confirm_vcab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -398,7 +410,7 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
             }
 
         } else {
-            Messages_Common_Class.showSnackBar("No driver found", main_request_layout);
+            Messages_Common_Class.showSnackBar("Zero drivers found", main_request_layout);
             lastDriverCall = null;
             finish();
         }
@@ -693,17 +705,19 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        TripPlanModel newTripPlanModel = snapshot.getValue(TripPlanModel.class);
+                        if(snapshot.exists()) {
 
+                            TripPlanModel newTripPlanModel = snapshot.getValue(TripPlanModel.class);
 
-                        String driverNewPosition = new StringBuilder().append(newTripPlanModel.getCurrentLat())
-                                .append(",")
-                                .append(newTripPlanModel.getCurrentLng())
-                                .toString();
+                            String driverNewPosition = new StringBuilder().append(newTripPlanModel.getCurrentLat())
+                                    .append(",")
+                                    .append(newTripPlanModel.getCurrentLng())
+                                    .toString();
 
-                        if (!driverOldPosition.equals(driverNewPosition))// driver moving
-                        {
-                            moveMarkerAnimation(destinationMarker, driverOldPosition, driverNewPosition);
+                            if (!driverOldPosition.equals(driverNewPosition))// driver moving
+                            {
+                                moveMarkerAnimation(destinationMarker, driverOldPosition, driverNewPosition);
+                            }
                         }
 
                     }

@@ -171,12 +171,12 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                 if (mapFragment == null) {
                     mapFragment = SupportMapFragment.newInstance();
                     showMap();
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    // R.id.map is a layout
+                    transaction.replace(R.id.google_map, mapFragment).commit();
                 }
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                // R.id.map is a layout
-                transaction.replace(R.id.google_map, mapFragment).commit();
 
-                showMap();
+
                 getLastKnowLocations();
             }
         }, 1500);
@@ -426,7 +426,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                         LatLng userDestination = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude); // trip end location
 
                         startActivity(new Intent(getActivity(), RequestDriverActivity.class));
-                        EventBus.getDefault().postSticky(new SelectPlaceEvent(userOrigin, userDestination));
+                        EventBus.getDefault().postSticky(new SelectPlaceEvent(userOrigin, userDestination, place.getAddress()));
 
 
                     }

@@ -174,6 +174,7 @@ public class Messages_Common_Class {
                         notificationData.put("customerUid", FirebaseAuth.getInstance().getCurrentUser().getUid());
                         notificationData.put("PickupLocation", selectPlaceEvent.getUserOriginString());
                         notificationData.put("CustomerDestinationLocation", selectPlaceEvent.getUserDestinationString());
+                        notificationData.put("CustomerDestinationAddress", selectPlaceEvent.getAddress());
 
                         /* notificationData.put("PickupLocation", new StringBuilder("")
                 .append(selectPlaceEvent.getUserOrigin().latitude)
