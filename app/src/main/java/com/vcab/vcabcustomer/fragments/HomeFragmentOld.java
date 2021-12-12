@@ -122,6 +122,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
     IFirebaseFailedListener iFirebaseFailedListener;
 
     private boolean firstTime;
+    private boolean isNextLaunch = false;
     private String cityName;
 
     // Disposables,they're useful when e.g. you make a long-running HTTP request
@@ -132,6 +133,24 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
     public void stopLocationUpdates() {
         if (fusedLocationProviderClient != null) {
             fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (isNextLaunch) {
+            //when user back to this from another activity reload drivers
+
+            loadAvailableDrivers();
+        } else {
+            isNextLaunch = true;
         }
     }
 
@@ -151,6 +170,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
     @Override
     public void onStop() {
         super.onStop();
+
         compositeDisposable.clear();
         //  stopLocationUpdates();
     }
@@ -830,7 +850,7 @@ public class HomeFragmentOld extends Fragment implements OnMapReadyCallback, IFi
                             Messages_Common_Class.markerList.remove(driverGeoModel.getKey());//remove marker info from hash map
                             Messages_Common_Class.driverLocationSubscribe.remove(driverGeoModel.getKey());//remove driver info from hash map
 
-                            if(Messages_Common_Class.driverFound!=null && Messages_Common_Class.driverFound.size()>0) {
+                            if (Messages_Common_Class.driverFound != null && Messages_Common_Class.driverFound.size() > 0) {
                                 Messages_Common_Class.driverFound.remove(driverGeoModel.getKey());//remove marker info from hash map
                                 driverLocation.removeEventListener(this); // remove event listner
                             }

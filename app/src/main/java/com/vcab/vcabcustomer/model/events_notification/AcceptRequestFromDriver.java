@@ -1,4 +1,4 @@
-package com.vcab.vcabcustomer.model;
+package com.vcab.vcabcustomer.model.events_notification;
 
 public class AcceptRequestFromDriver {
 

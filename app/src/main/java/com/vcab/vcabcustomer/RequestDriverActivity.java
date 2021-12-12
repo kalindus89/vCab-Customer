@@ -45,14 +45,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.ui.IconGenerator;
-import com.squareup.picasso.Picasso;
 import com.vcab.vcabcustomer.databinding.ActivityRequestDriverBinding;
-import com.vcab.vcabcustomer.model.AcceptRequestFromDriver;
-import com.vcab.vcabcustomer.model.DeclineAndRemoveTripFromDriver;
-import com.vcab.vcabcustomer.model.DeclineRequestFromDriver;
+import com.vcab.vcabcustomer.model.events_notification.AcceptRequestFromDriver;
+import com.vcab.vcabcustomer.model.events_notification.DeclineAndRemoveTripFromDriver;
+import com.vcab.vcabcustomer.model.events_notification.DeclineRequestFromDriver;
 import com.vcab.vcabcustomer.model.DriverGeoModel;
 import com.vcab.vcabcustomer.model.SelectPlaceEvent;
 import com.vcab.vcabcustomer.model.TripPlanModel;
+import com.vcab.vcabcustomer.model.events_notification.DriverCompletedTripEvent;
 import com.vcab.vcabcustomer.retrofit_remote.IGoogleApiInterface;
 import com.vcab.vcabcustomer.retrofit_remote.RetrofitClient;
 
@@ -134,6 +134,9 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
         if (EventBus.getDefault().hasSubscriberForEvent(DeclineAndRemoveTripFromDriver.class)) {
             EventBus.getDefault().removeStickyEvent(DeclineAndRemoveTripFromDriver.class);
         }
+        if (EventBus.getDefault().hasSubscriberForEvent(DriverCompletedTripEvent.class)) {
+            EventBus.getDefault().removeStickyEvent(DriverCompletedTripEvent.class);
+        }
 
         EventBus.getDefault().unregister(this);
     }
@@ -214,6 +217,16 @@ public class RequestDriverActivity extends FragmentActivity implements OnMapRead
                     }
                 });
 
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onDriverCompletedTripEvent (DriverCompletedTripEvent driverCompletedTripEvent) {
+
+        Messages_Common_Class.showNotification(
+                this,
+                "Complete",
+                "Your trip has been completed");
+        finish();
     }
 
     @Override
