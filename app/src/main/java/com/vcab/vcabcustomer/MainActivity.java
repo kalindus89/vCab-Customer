@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         String refreshToken = task.getResult();
 
+                     //   System.out.println("aaaaaaaaaaaaaa "+refreshToken+" "+new SessionManagement().getFBToken(getApplicationContext()));
+
                         if (!refreshToken.equals(new SessionManagement().getFBToken(getApplicationContext()))) {
 
                             String fireStorePath="users/customers/userData/"+FirebaseAuth.getInstance().getUid();

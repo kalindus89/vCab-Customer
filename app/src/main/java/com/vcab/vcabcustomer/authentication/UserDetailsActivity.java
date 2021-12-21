@@ -163,7 +163,8 @@ public class UserDetailsActivity extends AppCompatActivity {
 
     private void sendDataToCloudFirestore() {
 
-        CustomerModel user = new CustomerModel(fName.getText().toString(),phone_number.getText().toString(),email.getText().toString(),imageUriAccessToken,"update later");
+        CustomerModel user = new CustomerModel(fName.getText().toString(),phone_number.getText().toString(),
+                email.getText().toString(),imageUriAccessToken,"update later");
 
         Map<String, Object> userLocation = new HashMap<>();
         userLocation.put("geo_point", (new GeoPoint(0.0,0.0)));
